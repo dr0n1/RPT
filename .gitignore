@@ -1,5 +1,7 @@
 /.idea
+/.history
+/backup
 /styles/__pycache__
 styles/main.ui
 *.db
-/.history
+
