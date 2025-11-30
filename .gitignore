@@ -1,0 +1,5 @@
+/.idea
+/styles/__pycache__
+styles/main.ui
+*.db
+/.history

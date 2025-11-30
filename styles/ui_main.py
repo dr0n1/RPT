@@ -1,0 +1,96 @@
+from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
+    QMetaObject, QObject, QPoint, QRect,
+    QSize, QTime, QUrl, Qt)
+from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
+    QCursor, QFont, QFontDatabase, QGradient,
+    QIcon, QImage, QKeySequence, QLinearGradient,
+    QPainter, QPalette, QPixmap, QRadialGradient,
+    QTransform)
+from PySide6.QtWidgets import (QApplication, QFrame, QGroupBox, QListWidget,
+    QListWidgetItem, QMainWindow, QMenu, QMenuBar,
+    QSizePolicy, QStatusBar, QWidget)
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        if not MainWindow.objectName():
+            MainWindow.setObjectName(u"MainWindow")
+        MainWindow.resize(1079, 570)
+        font = QFont()
+        font.setPointSize(9)
+        MainWindow.setFont(font)
+        self.action_env = QAction(MainWindow)
+        self.action_env.setObjectName(u"action_env")
+        self.action_author = QAction(MainWindow)
+        self.action_author.setObjectName(u"action_author")
+        self.action_add = QAction(MainWindow)
+        self.action_add.setObjectName(u"action_add")
+        self.action_del = QAction(MainWindow)
+        self.action_del.setObjectName(u"action_del")
+        self.action_6 = QAction(MainWindow)
+        self.action_6.setObjectName(u"action_6")
+        self.action_modify = QAction(MainWindow)
+        self.action_modify.setObjectName(u"action_modify")
+        self.action_4 = QAction(MainWindow)
+        self.action_4.setObjectName(u"action_4")
+        self.action_module = QAction(MainWindow)
+        self.action_module.setObjectName(u"action_module")
+        self.action_about = QAction(MainWindow)
+        self.action_about.setObjectName(u"action_about")
+        self.action_dr0n1 = QAction(MainWindow)
+        self.action_dr0n1.setObjectName(u"action_dr0n1")
+        self.action_database = QAction(MainWindow)
+        self.action_database.setObjectName(u"action_database")
+        self.action_theme = QAction(MainWindow)
+        self.action_theme.setObjectName(u"action_theme")
+        self.centralwidget = QWidget(MainWindow)
+        self.centralwidget.setObjectName(u"centralwidget")
+        self.groupBox = QGroupBox(self.centralwidget)
+        self.groupBox.setObjectName(u"groupBox")
+        self.groupBox.setGeometry(QRect(220, 20, 841, 480))
+        self.groupBox.setMaximumSize(QSize(900, 480))
+        self.listWidget = QListWidget(self.centralwidget)
+        self.listWidget.setObjectName(u"listWidget")
+        self.listWidget.setGeometry(QRect(10, 20, 191, 480))
+        self.listWidget.setMaximumSize(QSize(200, 480))
+        self.listWidget.setFrameShape(QFrame.Shape.NoFrame)
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QMenuBar(MainWindow)
+        self.menubar.setObjectName(u"menubar")
+        self.menubar.setGeometry(QRect(0, 0, 1079, 33))
+        self.menu_3 = QMenu(self.menubar)
+        self.menu_3.setObjectName(u"menu_3")
+        self.menu_4 = QMenu(self.menubar)
+        self.menu_4.setObjectName(u"menu_4")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QStatusBar(MainWindow)
+        self.statusbar.setObjectName(u"statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+
+        self.menubar.addAction(self.menu_3.menuAction())
+        self.menubar.addAction(self.menu_4.menuAction())
+        self.menu_3.addAction(self.action_env)
+        self.menu_3.addAction(self.action_database)
+        self.menu_3.addAction(self.action_theme)
+        self.menu_4.addAction(self.action_about)
+
+        self.retranslateUi(MainWindow)
+
+        QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"RPT V3.0 By dr0n1", None))
+        self.action_env.setText(QCoreApplication.translate("MainWindow", u"\u73af\u5883\u53d8\u91cf", None))
+        self.action_author.setText("")
+        self.action_add.setText(QCoreApplication.translate("MainWindow", u"\u6dfb\u52a0\u5de5\u5177", None))
+        self.action_del.setText(QCoreApplication.translate("MainWindow", u"\u5220\u9664\u5de5\u5177", None))
+        self.action_6.setText(QCoreApplication.translate("MainWindow", u"\u5207\u6362\u660e\u4eae/\u9ed1\u6697\u6a21\u5f0f", None))
+        self.action_modify.setText(QCoreApplication.translate("MainWindow", u"\u4fee\u6539\u5de5\u5177", None))
+        self.action_4.setText(QCoreApplication.translate("MainWindow", u"\u5207\u6362\u660e\u4eae/\u9ed1\u6697\u6a21\u5f0f", None))
+        self.action_module.setText(QCoreApplication.translate("MainWindow", u"\u7ba1\u7406\u6a21\u5757", None))
+        self.action_about.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e\u5de5\u5177\u7bb1", None))
+        self.action_dr0n1.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e\u4f5c\u8005", None))
+        self.action_database.setText(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u5e93", None))
+        self.action_theme.setText(QCoreApplication.translate("MainWindow", u"\u4e3b\u9898\u5207\u6362", None))
+        self.menu_3.setTitle(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
+        self.menu_4.setTitle(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
+
