@@ -5,6 +5,7 @@
 # @Last Update: 2025/11/29
 """
 
+import os
 import sqlite3
 
 from PySide6.QtCore import Qt
@@ -25,17 +26,15 @@ from styles import (
     apply_stylesheet,
     apply_stylesheets,
     style_message_box,
-    BUTTON_DARK_STYLE,
     BUTTON_STYLE,
-    DB_DIALOG_DARK_STYLE,
     DB_DIALOG_STYLE,
-    RESTORE_BUTTON_DARK_STYLE,
     RESTORE_BUTTON_STYLE,
-    TAB_WIDGET_DARK_STYLE,
     TAB_WIDGET_STYLE,
-    TABLE_WIDGET_DARK_STYLE,
     TABLE_WIDGET_STYLE,
 )
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "tools.db")
 
 
 def create_modules_table(cursor):
@@ -99,6 +98,8 @@ def insert_default_data(cursor):
         ("提权", "tools_privilege", "本地与远程提权工具"),
         ("WebShell管理", "tools_webshell", "常用 WebShell 管理工具"),
         ("CTF", "tools_ctf", "CTF 竞赛常用辅助工具"),
+        ("reverse", "tools_reverse", "CTF reverse工具"),
+        ("misc", "tools_misc", "CTF misc工具"),
     ]
 
     for order, (name, directory, description) in enumerate(module_defaults):
@@ -137,6 +138,7 @@ def get_default_tools(module_ids):
         (module_ids["WebShell管理"], "冰蝎4", "“冰蝎”动态二进制加密网站管理客户端", "Behinder_v4.1.t00ls\\Behinder.jar", "java11_gui", "", "https://github.com/rebeyond/Behinder"),
         (module_ids["WebShell管理"], "哥斯拉", "哥斯拉", "Godzilla\\godzilla.jar", "java11_gui", "", "https://github.com/BeichenDream/Godzilla"),
         (module_ids["WebShell管理"], "蚁剑", "中国蚁剑是一款跨平台的开源网站管理工具", "AntSword-Loader-v4.0.3-win32-x64\\AntSword.exe", "exe_gui", "", "https://github.com/AntSwordProject/antSword"),
+
         (module_ids["信息收集"], "Swagger", "自动化爬取并自动测试所有swagger接口", "swagger-hack\\swagger-hack2.0.py", "python3_cli", "", "https://github.com/jayus0821/swagger-hack"),
         (module_ids["信息收集"], "dirsearch_bypass403", "目录扫描+JS文件中提取URL和子域+403状态绕过+指纹识别", "dirsearch_bypass403-3.1\\dirsearch.py", "python3_cli", "", "https://github.com/lemonlove7/dirsearch_bypass403"),
         (module_ids["信息收集"], "OneForAll", "一款功能强大的子域收集工具", "OneForAll-0.4.5\\oneforall.py", "python3_cli", "", "https://github.com/shmilylty/OneForAll"),
@@ -146,6 +148,9 @@ def get_default_tools(module_ids):
         (module_ids["信息收集"], "webanalyze", "a port of Wappalyzer in Go", "webanalyze\\webanalyze.exe", "exe_cli", "", "https://github.com/rverton/webanalyze"),
         (module_ids["信息收集"], "kscan", "全方位扫描器", "kscan\\kscan_windows_amd64.exe", "exe_cli", "", "https://github.com/lcvvvv/kscan/"),
         (module_ids["信息收集"], "ENScan_GO", "一键收集控股公司ICP备案", "ENScan_GO\\enscan-v1.3.1-windows-amd64.exe", "exe_cli", "", "https://github.com/wgpsec/ENScan_GO"),
+        (module_ids["信息收集"], "RustScan", "The Modern Port Scanner", "RustScan\\rustscan.exe","exe_cli", "", "https://github.com/bee-san/RustScan"),
+        (module_ids["信息收集"], "ffuf", "用 Go 语言编写的快速 Web 模糊测试器", "ffuf_2.1.0_windows_amd64\\ffuf.exe", "exe_cli", "","https://github.com/ffuf/ffuf"),
+
         (module_ids["框架利用工具"], "Hikvision-", "Hikvision综合漏洞利用工具", "hikvision\\net8.0-windows\\hikvision漏洞利用工具.exe", "exe_gui", "", "https://github.com/MInggongK/Hikvision-"),
         (module_ids["框架利用工具"], "JumpServer", "JumpServer 堡垒机未授权综合漏洞利用", "JumpServer\\blackjump.py", "python3_cli", "", "https://github.com/tarihub/blackjump"),
         (module_ids["框架利用工具"], "SpringBoot-Scan", "针对SpringBoot的开源渗透框架", "springboot\\SpringBoot-Scan-2.7\\SpringBoot-Scan.py", "python3_cli", "", "https://github.com/AabyssZG/SpringBoot-Scan"),
@@ -165,6 +170,8 @@ def get_default_tools(module_ids):
         (module_ids["框架利用工具"], "dahuaExploitGUI", "dahua综合漏洞利用工具", "dahua\\DahuaExploitGUI.jar", "java8_gui", "", "https://github.com/MInggongK/dahuaExploitGUI"),
         (module_ids["框架利用工具"], "jeecg-", "Jeecg-Boot综合漏洞利用工具", "jeecg\\jeecg-boot\\jeecgExploitss.jar", "java8_gui", "", "https://github.com/MInggongK/jeecg-"),
         (module_ids["框架利用工具"], "Jeecg_Tools", "jeecg框架漏洞利用工具", "jeecg\\jeecg\\Jeecg_Tools-1.0-java8.jar", "java8_gui", "", "https://github.com/K-7H7l/Jeecg_Tools"),
+        (module_ids["框架利用工具"], "redis-rogue-server", "Redis(<=5.0.5) RCE", "redis-rogue-server-master","file_folder", "", "https://github.com/n0b0dyCN/redis-rogue-server"),
+
         (module_ids["cms/oa利用工具"], "若依RuoYi", "若依v4.7.8定时任务rce", "RuoYi\\RuoYiExploitGUI_v1.0.jar", "java11_gui", "", "https://github.com/charonlight/RuoYiExploitGUI"),
         (module_ids["cms/oa利用工具"], "帆软", "帆软bi反序列漏洞利用工具", "Frchannel\\FrChannel-v3.jar", "java11_gui", "", "https://github.com/7wkajk/Frchannel"),
         (module_ids["cms/oa利用工具"], "帆软 plus", "帆软bi反序列化漏洞利用工具", "Frchannel\\FrChannelPlus.jar", "java11_gui", "", "https://github.com/BambiZombie/FrchannelPlus"),
@@ -173,6 +180,7 @@ def get_default_tools(module_ids):
         (module_ids["cms/oa利用工具"], "MYExploit", "一款基于产品的一键扫描工具", "MYExploit\\MYExploit.jar", "java11_gui", "", "https://github.com/achuna33/MYExploit"),
         (module_ids["cms/oa利用工具"], "Exp-Tools", "OA综合漏洞利用工具", "Exp-Tools\\Exp-Tools-1.3.1-encrypted.jar", "java8_gui", "-javaagent:Exp-Tools-1.3.1-encrypted.jar", "https://github.com/cseroad/Exp-Tools"),
         (module_ids["cms/oa利用工具"], "TongdaOATool", "通达OA漏洞检测工具", "tongda\\TongdaTools.jar", "java11_gui", "", "https://github.com/xiaokp7/TongdaOATool"),
+
         (module_ids["综合利用工具"], "mdut", "中文的数据库跨平台利用工具", "mdut\\Multiple.Database.Utilization.Tools-2.1.1-jar-with-dependencies.jar", "java11_gui", "", "https://github.com/SafeGroceryStore/MDUT"),
         (module_ids["综合利用工具"], "蓝队分析研判工具箱", "蓝队分析研判工具箱", "BlueTeamTools\\BlueTeam_ABC_123.jar", "java11_gui", "", "https://github.com/abc123info/BlueTeamTools"),
         (module_ids["综合利用工具"], "API-Explorer", "API接口管理工具", "API-Explorer\\API-Explorer.exe", "exe_gui", "", "https://github.com/mrknow001/API-Explorer"),
@@ -186,6 +194,7 @@ def get_default_tools(module_ids):
         (module_ids["综合利用工具"], "Postgresql", "Postgresql红队实战漏洞利用工具", "Postgresql\\postgreUtil-1.0-SNAPSHOT-jar-with-dependencies.jar", "java8_gui", "", "https://mp.weixin.qq.com/s/0s6CTAjwd5-qN6IxupwC9w"),
         (module_ids["综合利用工具"], "cloudsword", "云鉴 CloudSword", "cloudsword\\cloudsword.exe", "exe_cli", "", "https://github.com/wgpsec/cloudsword"),
         (module_ids["综合利用工具"], "unauthorized", "常见的未授权漏洞检测", "unauthorized\\unauthorizedV2.exe", "exe_gui", "", "https://github.com/xk11z/unauthorized"),
+
         (module_ids["内网域工具"], "fscan", "一款内网综合扫描工具", "fscan", "file_folder", "", "https://github.com/shadow1ng/fscan"),
         (module_ids["内网域工具"], "TxPortMap", "Port Scanner & Banner Identify From TianXiang", "TxPortMap", "file_folder", "", "https://github.com/4dogs-cn/TXPortMap"),
         (module_ids["内网域工具"], "ServerScan", "内网横向信息收集的高并发网络扫描、服务探测工具", "ServerScan", "file_folder", "", "https://github.com/Adminisme/ServerScan"),
@@ -197,18 +206,29 @@ def get_default_tools(module_ids):
         (module_ids["内网域工具"], "DomainPasswordSpray", "用于对域中的用户执行密码喷洒攻击", "DomainPasswordSpray", "file_folder", "", "https://github.com/dafthack/DomainPasswordSpray"),
         (module_ids["内网域工具"], "kekeo", "一个用于在 C 语言中操作 Microsoft Kerberos 的小工具箱", "kekeo", "file_folder", "", "https://github.com/gentilkiwi/kekeo"),
         (module_ids["内网域工具"], "PowerSploit", "A PowerShell Post-Exploitation Framework", "PowerSploit", "file_folder", "", "https://github.com/PowerShellMafia/PowerSploit/"),
+        (module_ids["内网域工具"], "SharpHound", "C# Data Collector for BloodHound", "SharpHound","file_folder", "", "https://github.com/SpecterOps/SharpHound"),
+
         (module_ids["隧道"], "Stowaway", "多级代理工具", "Stowaway", "file_folder", "", "https://github.com/ph4ntonn/Stowaway"),
         (module_ids["隧道"], "iox", "端口转发 & 内网代理工具", "iox", "file_folder", "", "https://github.com/EddieIvan01/iox"),
         (module_ids["隧道"], "frp", "高性能的反向代理应用", "frp", "file_folder", "", "https://github.com/fatedier/frp"),
         (module_ids["隧道"], "reGeorg", "The successor to reDuh", "reGeorg-master", "file_folder", "", "https://github.com/sensepost/reGeorg"),
         (module_ids["隧道"], "Neo-reGeorg", "Neo-reGeorg 是一个旨在积极重构 reGeorg 的项目", "Neo-reGeorg-5.2.1", "file_folder", "", "https://github.com/L-codes/Neo-reGeorg"),
         (module_ids["隧道"], "chisel", "A fast TCP/UDP tunnel over HTTP", "chisel", "file_folder", "", "https://github.com/jpillora/chisel"),
+
         (module_ids["CTF"], "焚靖", "Jinja SSTI绕过WAF的全自动脚本", "fenjing", "python3_module", "webui", "https://github.com/Marven11/Fenjing"),
         (module_ids["CTF"], "git", "提取远程 git 泄露或本地 git 的工具", "Git_Extract-master\\git_extract.py", "python3_cli", "", "https://github.com/gakki429/Git_Extract"),
         (module_ids["CTF"], "dirsearch", "Web path scanner", "dirsearch-0.4.3\\dirsearch.py", "python3_cli", "", "https://github.com/maurosoria/dirsearch"),
         (module_ids["CTF"], "arjun", "HTTP parameter discovery suite.", "arjun", "python3_module", "", "https://github.com/s0md3v/Arjun"),
         (module_ids["CTF"], "svnExploit", "SVN源代码泄露全版本Dump源码", "svnExploit\\SvnExploit.py", "python3_cli", "", "https://github.com/admintony/svnExploit"),
+        (module_ids["CTF"], "ApereoCas", "ApereoCas反序列化回显与检测", "ysoserial-mangguogan-master\\ysoserial-managguogan-0.0.1-SNAPSHOT-all.jar", "java11_cui", "","https://github.com/JulianWu520/ysoserial-mangguogan"),
+
         (module_ids["提权"], "linux-exploit-suggester", "Linux privilege escalation auditing tool", "linux-exploit-suggester", "file_folder", "", "https://github.com/The-Z-Labs/linux-exploit-suggester/"),
+        (module_ids["提权"], "windows-kernel-exploits", "Windows平台提权漏洞集合", "windows-kernel-exploits", "file_folder", "","https://github.com/SecWiki/windows-kernel-exploits"),
+
+        (module_ids["reverse"], "GDRE", "Godot RE Tools", "GDRE_tools-v2.4.0-windows\\gdre_tools.exe", "exe_gui", "","https://github.com/GDRETools/gdsdecomp"),
+        (module_ids["reverse"], "wabt", "The WebAssembly Binary Toolkit", "wabt-1.0.39\\bin", "file_folder", "","https://github.com/WebAssembly/wabt"),
+
+        (module_ids["misc"], "ToolsFx", "跨平台密码学工具箱。", "ToolsFx-1.19.0-withjre-win-x64\\ToolsFx.exe", "exe_gui", "","https://github.com/Leon406/ToolsFx"),
     ]
 
     processed_defaults = []
@@ -237,7 +257,7 @@ def get_default_tools(module_ids):
 
 def create_db():
     # 创建数据库文件并写入默认数据
-    with sqlite3.connect('tools.db') as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         create_tables(cursor)
         insert_default_data(cursor)
@@ -246,7 +266,7 @@ def create_db():
 
 def upgrade_db():
     # 升级数据库结构并在空库时回填默认数据
-    with sqlite3.connect('tools.db') as conn:
+    with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         create_tables(cursor)
         cursor.execute('SELECT COUNT(*) FROM modules')
@@ -258,23 +278,18 @@ def upgrade_db():
         conn.commit()
 
 
-def _is_dark_theme(parent):
-    theme_manager = getattr(parent, 'theme_manager', None)
-    return theme_manager.is_dark_theme() if theme_manager else False
-
-
-def _exec_message_box(parent, title, text, icon, buttons, default_button, is_dark):
+def _exec_message_box(parent, title, text, icon, buttons, default_button):
     box = QMessageBox(parent)
     box.setWindowTitle(title)
     box.setText(text)
     box.setIcon(icon)
     box.setStandardButtons(buttons)
     box.setDefaultButton(default_button)
-    style_message_box(box, is_dark)
+    style_message_box(box)
     return box.exec()
 
 
-def _restore_database_defaults(dialog, parent, is_dark, *reload_callbacks):
+def _restore_database_defaults(dialog, parent, *reload_callbacks):
     # 用户确认后清空三张表并恢复默认数据，同时刷新界面展示
     confirm = _exec_message_box(
         dialog,
@@ -283,13 +298,12 @@ def _restore_database_defaults(dialog, parent, is_dark, *reload_callbacks):
         QMessageBox.Icon.Warning,
         QMessageBox.Yes | QMessageBox.No,
         QMessageBox.No,
-        is_dark
     )
     if confirm != QMessageBox.Yes:
         return False
 
     try:
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('DELETE FROM tools')
             c.execute('DELETE FROM modules')
@@ -311,7 +325,6 @@ def _restore_database_defaults(dialog, parent, is_dark, *reload_callbacks):
             QMessageBox.Icon.Information,
             QMessageBox.Ok,
             QMessageBox.Ok,
-            is_dark
         )
         return True
     except Exception as exc:
@@ -322,9 +335,14 @@ def _restore_database_defaults(dialog, parent, is_dark, *reload_callbacks):
             QMessageBox.Icon.Critical,
             QMessageBox.Ok,
             QMessageBox.Ok,
-            is_dark
         )
         return False
+
+
+def restore_database_defaults(dialog, *reload_callbacks):
+    # 用于全局快捷键触发的恢复默认（不依赖外层窗口回调）
+    callbacks = [cb for cb in reload_callbacks if callable(cb)]
+    return _restore_database_defaults(dialog, None, *callbacks)
 
 
 def show_database_dialog(parent):
@@ -335,12 +353,11 @@ def show_database_dialog(parent):
     dialog.setMinimumSize(1000, 700)
     dialog.setMaximumSize(1600, 1000)
 
-    is_dark = _is_dark_theme(parent)
-    apply_stylesheet(dialog, DB_DIALOG_STYLE, DB_DIALOG_DARK_STYLE, is_dark)
+    apply_stylesheet(dialog, DB_DIALOG_STYLE)
 
-    tabs = _create_tab_widget(dialog, is_dark)
-    module_tab, module_table, module_buttons = _create_module_tab(tabs, is_dark)
-    tool_tab, tool_table, tool_buttons = _create_tool_tab(tabs, is_dark)
+    tabs = _create_tab_widget(dialog)
+    module_tab, module_table, module_buttons = _create_module_tab(tabs)
+    tool_tab, tool_table, tool_buttons = _create_tool_tab(tabs)
 
     main_layout = QVBoxLayout(dialog)
     main_layout.addWidget(tabs)
@@ -372,21 +389,21 @@ def show_database_dialog(parent):
     return result == QDialog.Accepted
 
 
-def _create_tab_widget(parent, is_dark):
+def _create_tab_widget(parent):
     # 创建带主题样式的 Tab 容器
     tabs = QTabWidget(parent)
-    apply_stylesheet(tabs, TAB_WIDGET_STYLE, TAB_WIDGET_DARK_STYLE, is_dark)
+    apply_stylesheet(tabs, TAB_WIDGET_STYLE)
     return tabs
 
 
-def _create_module_tab(tabs, is_dark):
+def _create_module_tab(tabs):
     # 组装模块管理页的表格与按钮布局
     module_tab = QWidget()
     module_layout = QVBoxLayout(module_tab)
     module_layout.setSpacing(12)
     module_layout.setContentsMargins(16, 16, 16, 16)
 
-    tableWidget = _create_table_widget(is_dark)
+    tableWidget = _create_table_widget()
     module_layout.addWidget(tableWidget)
 
     btns_layout = QHBoxLayout()
@@ -397,13 +414,8 @@ def _create_module_tab(tabs, is_dark):
     btn_refresh = QPushButton("🔄 刷新")
     btn_close = QPushButton("❌ 关闭")
 
-    apply_stylesheets(
-        [btn_add_row, btn_delete_row, btn_refresh, btn_close],
-        BUTTON_STYLE,
-        BUTTON_DARK_STYLE,
-        is_dark,
-    )
-    apply_stylesheet(btn_restore_default, RESTORE_BUTTON_STYLE, RESTORE_BUTTON_DARK_STYLE, is_dark)
+    apply_stylesheets([btn_add_row, btn_delete_row, btn_refresh, btn_close], BUTTON_STYLE)
+    apply_stylesheet(btn_restore_default, RESTORE_BUTTON_STYLE)
 
     btns_layout.addWidget(btn_add_row)
     btns_layout.addWidget(btn_delete_row)
@@ -417,14 +429,14 @@ def _create_module_tab(tabs, is_dark):
     return module_tab, tableWidget, (btn_add_row, btn_delete_row, btn_restore_default, btn_refresh, btn_close)
 
 
-def _create_tool_tab(tabs, is_dark):
+def _create_tool_tab(tabs):
     # 组装工具管理页的表格与按钮布局
     tool_tab = QWidget()
     tool_layout = QVBoxLayout(tool_tab)
     tool_layout.setSpacing(12)
     tool_layout.setContentsMargins(16, 16, 16, 16)
 
-    tool_table = _create_table_widget(is_dark)
+    tool_table = _create_table_widget()
     tool_layout.addWidget(tool_table)
 
     tool_btns_layout = QHBoxLayout()
@@ -435,13 +447,8 @@ def _create_tool_tab(tabs, is_dark):
     btn_refresh = QPushButton("🔄 刷新")
     btn_close = QPushButton("❌ 关闭")
 
-    apply_stylesheets(
-        [btn_add_row, btn_delete_row, btn_refresh, btn_close],
-        BUTTON_STYLE,
-        BUTTON_DARK_STYLE,
-        is_dark,
-    )
-    apply_stylesheet(btn_restore_default, RESTORE_BUTTON_STYLE, RESTORE_BUTTON_DARK_STYLE, is_dark)
+    apply_stylesheets([btn_add_row, btn_delete_row, btn_refresh, btn_close], BUTTON_STYLE)
+    apply_stylesheet(btn_restore_default, RESTORE_BUTTON_STYLE)
 
     tool_btns_layout.addWidget(btn_add_row)
     tool_btns_layout.addWidget(btn_delete_row)
@@ -455,7 +462,7 @@ def _create_tool_tab(tabs, is_dark):
     return tool_tab, tool_table, (btn_add_row, btn_delete_row, btn_restore_default, btn_refresh, btn_close)
 
 
-def _create_table_widget(is_dark):
+def _create_table_widget():
     # 统一创建带交替行色与主题样式的表格控件
     tableWidget = QTableWidget()
     tableWidget.setAlternatingRowColors(True)
@@ -464,7 +471,7 @@ def _create_table_widget(is_dark):
     tableWidget.verticalHeader().setDefaultSectionSize(50)
     tableWidget.verticalHeader().setMinimumSectionSize(45)
 
-    apply_stylesheet(tableWidget, TABLE_WIDGET_STYLE, TABLE_WIDGET_DARK_STYLE, is_dark)
+    apply_stylesheet(tableWidget, TABLE_WIDGET_STYLE)
     return tableWidget
 
 
@@ -473,7 +480,7 @@ def _load_module_data(tableWidget):
     tableWidget.blockSignals(True)
     tableWidget.setSortingEnabled(False)
     try:
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('SELECT id, name, directory, description, sort_order FROM modules ORDER BY sort_order, id')
             modules = c.fetchall()
@@ -511,11 +518,10 @@ def _bind_module_events(tableWidget, buttons, dialog, parent, tool_reload=None):
     # 绑定模块表格的增删改事件并自动持久化到数据库
     btn_add_row, btn_delete_row, btn_restore_default, btn_refresh, btn_close = buttons
     btn_close.clicked.connect(dialog.accept)
-    is_dark = _is_dark_theme(parent)
 
     def auto_save():
         try:
-            with sqlite3.connect('tools.db') as conn:
+            with sqlite3.connect(DB_PATH) as conn:
                 c = conn.cursor()
                 c.execute('SELECT id, name, directory, description, sort_order FROM modules')
                 existing_modules = {
@@ -604,7 +610,7 @@ def _bind_module_events(tableWidget, buttons, dialog, parent, tool_reload=None):
         callbacks = [lambda: _load_module_data(tableWidget)]
         if tool_reload:
             callbacks.append(tool_reload)
-        _restore_database_defaults(dialog, parent, is_dark, *callbacks)
+        _restore_database_defaults(dialog, parent, *callbacks)
 
     def refresh_modules():
         _load_module_data(tableWidget)
@@ -623,7 +629,6 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
     # 绑定工具表格的增删查改逻辑并与模块列表联动
     btn_add_row, btn_delete_row, btn_restore_default, btn_refresh, btn_close = buttons
     btn_close.clicked.connect(dialog.accept)
-    is_dark = _is_dark_theme(parent)
 
     def _get_text(row, column):
         item = tool_table.item(row, column)
@@ -645,7 +650,7 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
         tool_table.blockSignals(True)
         for column in range(8):
             tool_table.setItem(new_row, column, QTableWidgetItem(""))
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('SELECT name FROM modules ORDER BY sort_order, id LIMIT 1')
             first_module = c.fetchone()
@@ -666,7 +671,7 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
                 item = tool_table.item(r, 8)
                 if item and item.text().isdigit():
                     tool_ids.append(int(item.text()))
-            with sqlite3.connect('tools.db') as conn:
+            with sqlite3.connect(DB_PATH) as conn:
                 c = conn.cursor()
                 if tool_ids:
                     c.executemany('DELETE FROM tools WHERE id = ?', [(tool_id,) for tool_id in tool_ids])
@@ -681,7 +686,7 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
         callbacks = [lambda: _load_tool_data(tool_table)]
         if module_reload:
             callbacks.append(module_reload)
-        _restore_database_defaults(dialog, parent, is_dark, *callbacks)
+        _restore_database_defaults(dialog, parent, *callbacks)
 
     def refresh_tools():
         _load_tool_data(tool_table)
@@ -704,7 +709,7 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
         id_item = tool_table.item(row, 8)
         tool_id = int(id_item.text()) if id_item and id_item.text().isdigit() else None
 
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('SELECT id FROM modules WHERE name = ?', (module_name,))
             module_row = c.fetchone()
@@ -716,7 +721,6 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
                     QMessageBox.Icon.Warning,
                     QMessageBox.Ok,
                     QMessageBox.Ok,
-                    is_dark
                 )
                 _load_tool_data(tool_table)
                 return None
@@ -773,7 +777,7 @@ def _load_tool_data(tool_table):
     tool_table.setSortingEnabled(False)
 
     try:
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute(
                 '''
@@ -861,4 +865,4 @@ def _load_tool_data(tool_table):
         tool_table.setSortingEnabled(True)
 
 
-__all__ = ["create_db", "upgrade_db", "show_database_dialog"]
+__all__ = ["DB_PATH", "create_db", "upgrade_db", "restore_database_defaults", "show_database_dialog"]

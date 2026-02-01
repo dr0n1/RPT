@@ -92,31 +92,61 @@ GROUPBOX_STYLE = """
 
 LISTWIDGET_STYLE = """
     QListWidget {
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid #dbeafe;
-        border-radius: 12px;
-        padding: 8px;
-        margin: 8px;
+        background: transparent;
+        border: none;
+        border-radius: 14px;
+        padding: 12px;
+        margin: 0px;
         font-size: 13px;
-        font-weight: 500;
+        font-weight: 600;
+        color: #0f172a;
+        outline: none;
+    }
+    
+    QListWidget::viewport {
+        background: transparent;
+        border: none;
+        border-radius: 14px;
     }
     
     QListWidget::item {
-        padding: 12px 16px;
-        margin: 2px;
-        border-radius: 8px;
+        padding: 12px 14px;
+        margin: 6px 0;
+        border-radius: 10px;
         background: transparent;
     }
     
     QListWidget::item:hover {
-        background: #eff6ff;
+        background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+            stop:0 #f0f7ff, stop:1 #e5efff);
         border: 1px solid #bfdbfe;
+        color: #1d4ed8;
     }
     
     QListWidget::item:selected {
         background: #2563eb;
         color: #f8fafc;
         border: 1px solid #1d4ed8;
+    }
+    
+    QScrollBar:vertical {
+        width: 0px;
+        background: transparent;
+        margin: 0;
+    }
+    QScrollBar::handle:vertical {
+        min-height: 0;
+        background: transparent;
+    }
+"""
+
+LIST_CONTAINER_STYLE = """
+    #listContainer {
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid #dbeafe;
+        border-radius: 14px;
+        padding: 14px;
+        margin: 8px;
     }
 """
 
@@ -150,3 +180,15 @@ TOOL_BUTTON_STYLE = """
     }
 """
 
+CUSTOM_TOOLTIP_STYLE = """
+    QFrame#RoundedToolTip {
+        background: transparent;
+        border: none;
+    }
+    QFrame#RoundedToolTip QLabel {
+        color: #1e293b;
+        padding: 6px 10px;
+        font-size: 12px;
+        background: transparent;
+    }
+"""

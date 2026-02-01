@@ -1,4 +1,4 @@
-MESSAGE_BOX_LIGHT_STYLE = """
+MESSAGE_BOX_STYLE = """
     QMessageBox {
         background-color: #ffffff;
         color: #1f2937;
@@ -29,37 +29,6 @@ MESSAGE_BOX_LIGHT_STYLE = """
     }
 """
 
-MESSAGE_BOX_DARK_STYLE = """
-    QMessageBox {
-        background-color: #1f1f2f;
-        color: #cdd6f4;
-    }
-    QMessageBox QLabel {
-        color: #cdd6f4;
-        font-size: 13px;
-    }
-    QMessageBox QPushButton {
-        padding: 8px 18px;
-        font-size: 12px;
-        font-weight: 600;
-        border-radius: 8px;
-        border: 1px solid #585b70;
-        background-color: #313244;
-        color: #cdd6f4;
-        min-width: 70px;
-    }
-    QMessageBox QPushButton:hover {
-        background-color: #45475a;
-        border: 1px solid #89b4fa;
-        color: #89b4fa;
-    }
-    QMessageBox QPushButton:pressed {
-        background-color: #74c7ec;
-        border: 1px solid #89dceb;
-        color: #11111b;
-    }
-"""
 
-
-def style_message_box(box, is_dark):
-    box.setStyleSheet(MESSAGE_BOX_DARK_STYLE if is_dark else MESSAGE_BOX_LIGHT_STYLE)
+def style_message_box(box):
+    box.setStyleSheet(MESSAGE_BOX_STYLE)

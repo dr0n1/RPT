@@ -1,17 +1,15 @@
-def apply_stylesheet(widget, light_style, dark_style, is_dark):
-    widget.setStyleSheet(dark_style if is_dark else light_style)
+def apply_stylesheet(widget, style):
+    """Apply a single stylesheet to a widget if it exists."""
+    if widget is not None:
+        widget.setStyleSheet(style)
 
 
-def apply_stylesheets(
-    widgets,
-    light_style,
-    dark_style,
-    is_dark,
-):
+def apply_stylesheets(widgets, style):
+    """Apply the same stylesheet to a collection of widgets."""
     for widget in widgets:
         if widget is None:
             continue
-        apply_stylesheet(widget, light_style, dark_style, is_dark)
+        apply_stylesheet(widget, style)
 
 
 def clear_stylesheet(widget):

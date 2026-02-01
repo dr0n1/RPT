@@ -14,11 +14,12 @@ import sys
 import webbrowser
 from functools import partial
 
-from PySide6.QtCore import Qt, QTimer, QDateTime
-from PySide6.QtGui import QIcon, QShortcut
+from PySide6.QtCore import Qt, QTimer, QDateTime, QEvent, QPoint
+from PySide6.QtGui import QIcon, QShortcut, QColor, QPainter, QPen, QPainterPath
 from PySide6.QtWidgets import (
     QApplication,
     QDialog,
+    QFrame,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -33,30 +34,94 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
-from db import create_db, show_database_dialog, upgrade_db
+from db import DB_PATH, create_db, restore_database_defaults as db_restore_database_defaults, show_database_dialog, upgrade_db
 from env import env, show_env_dialog
 from styles import *
-from styles.theme_manager import ThemeManager
 from styles.ui_main import Ui_MainWindow
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
+class RoundedToolTip(QFrame):
+    def __init__(self, parent=None):
+        super().__init__(parent, Qt.ToolTip | Qt.FramelessWindowHint | Qt.NoDropShadowWindowHint)
+        self.setObjectName("RoundedToolTip")
+        self.setAttribute(Qt.WA_TranslucentBackground, True)
+        self.setAttribute(Qt.WA_StyledBackground, True)
+        self.setAttribute(Qt.WA_TransparentForMouseEvents, True)
+        self.setAutoFillBackground(False)
+
+        self._bg_color = QColor("#ffffff")
+        self._border_color = QColor("#dbeafe")
+        self._radius = 10
+        self._shadow_margin = 6
+
+        layout = QVBoxLayout(self)
+        layout.setContentsMargins(
+            self._shadow_margin,
+            self._shadow_margin,
+            self._shadow_margin,
+            self._shadow_margin,
+        )
+        self._label = QLabel(self)
+        self._label.setWordWrap(True)
+        self._label.setMaximumWidth(360)
+        layout.addWidget(self._label)
+
+    def paintEvent(self, event):
+        painter = QPainter(self)
+        painter.setRenderHint(QPainter.Antialiasing)
+        outer = self.rect()
+        inner = outer.adjusted(
+            self._shadow_margin,
+            self._shadow_margin,
+            -self._shadow_margin,
+            -self._shadow_margin,
+        )
+
+        # Soft shadow with rounded corners (no square halo).
+        for i, alpha in enumerate((28, 18, 10), start=1):
+            shadow_rect = inner.adjusted(-i, -i, i, i).translated(0, 1)
+            shadow_path = QPainterPath()
+            shadow_path.addRoundedRect(
+                shadow_rect, self._radius + i, self._radius + i
+            )
+            painter.fillPath(shadow_path, QColor(15, 23, 42, alpha))
+
+        path = QPainterPath()
+        path.addRoundedRect(inner, self._radius, self._radius)
+        painter.fillPath(path, self._bg_color)
+        pen = QPen(self._border_color)
+        pen.setWidth(1)
+        painter.setPen(pen)
+        painter.drawPath(path)
+
+    def show_text(self, text, global_pos):
+        if not text:
+            self.hide()
+            return
+        self._label.setText(text)
+        self.adjustSize()
+        offset = QPoint(12, 16)
+        self.move(global_pos + offset)
+        self.show()
+        self.raise_()
+
+
 def check_and_init_db():
     # 确保 tools.db 存在且表结构可用，异常或缺失时重建并执行升级逻辑
-    db_path = os.path.join(BASE_DIR, "tools.db")
-    if not os.path.exists(db_path):
+    if not os.path.exists(DB_PATH):
         create_db()
         return
 
     try:
-        with sqlite3.connect(db_path) as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             cursor = conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='modules'")
             table_exists = cursor.fetchone()
         if not table_exists:
             try:
-                os.remove(db_path)
+                os.remove(DB_PATH)
             except OSError:
                 pass
             create_db()
@@ -64,7 +129,7 @@ def check_and_init_db():
         upgrade_db()
     except Exception:
         try:
-            os.remove(db_path)
+            os.remove(DB_PATH)
         except OSError:
             pass
         create_db()
@@ -73,7 +138,7 @@ def check_and_init_db():
 def create_module_directories():
     # 根据 modules 表中的目录字段创建对应的本地文件夹，保证工具路径可用
     try:
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('SELECT directory FROM modules')
             module_directories = [row[0] for row in c.fetchall()]
@@ -89,12 +154,12 @@ class MainWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.theme_manager = ThemeManager()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
         self._setup_main_styles()
         self._setup_widget_styles()
+        self._setup_tooltip()
         self._configure_menus()
         self._setup_fonts()
         self._setup_window_icon()
@@ -106,15 +171,32 @@ class MainWindow(QMainWindow):
         self._setup_layout()
         self._setup_shortcuts()
 
-    def _theme_value(self, light_value, dark_value):
-        return dark_value if self.theme_manager.is_dark_theme() else light_value
-
     def _setup_main_styles(self):
-        self.setStyleSheet(self._theme_value(MAIN_WINDOW_STYLE, MAIN_WINDOW_DARK_STYLE))
+        app = QApplication.instance()
+        if app is not None:
+            # Apply globally so QToolTip (top-level) gets rounded corners.
+            app.setStyleSheet(MAIN_WINDOW_STYLE)
+        else:
+            self.setStyleSheet(MAIN_WINDOW_STYLE)
 
     def _setup_widget_styles(self):
-        self.ui.groupBox.setStyleSheet(self._theme_value(GROUPBOX_STYLE, GROUPBOX_DARK_STYLE))
-        self.ui.listWidget.setStyleSheet(self._theme_value(LISTWIDGET_STYLE, LISTWIDGET_DARK_STYLE))
+        self.ui.groupBox.setStyleSheet(GROUPBOX_STYLE)
+        self.ui.listWidget.setStyleSheet(LISTWIDGET_STYLE)
+        self.ui.listWidget.setAttribute(Qt.WA_StyledBackground, True)
+        # Let stylesheet handle rounded background; avoid palette autofill.
+        self.ui.listWidget.setAutoFillBackground(False)
+        if self.ui.listWidget.viewport() is not None:
+            self.ui.listWidget.viewport().setAutoFillBackground(False)
+        self.ui.listWidget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.ui.listWidget.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.ui.listWidget.setSpacing(4)
+        self.ui.listWidget.setContentsMargins(8, 8, 8, 8)
+        self.ui.listWidget.setTextElideMode(Qt.ElideNone)
+        self.ui.listWidget.setWordWrap(False)
+
+    def _setup_tooltip(self):
+        self._tooltip = RoundedToolTip(self)
+        self._tooltip.setStyleSheet(CUSTOM_TOOLTIP_STYLE)
 
     def _setup_fonts(self):
         font = self.ui.listWidget.font()
@@ -131,7 +213,6 @@ class MainWindow(QMainWindow):
         self.ui.action_about.triggered.connect(self.show_about_toolbox)
         self.ui.action_env.triggered.connect(self.env)
         self.ui.action_database.triggered.connect(self.database)
-        self.ui.action_theme.triggered.connect(self.switch_theme)
 
     def _initialize_data(self):
         self.load_modules()
@@ -150,34 +231,18 @@ class MainWindow(QMainWindow):
         self.statusBar().addPermanentWidget(self.time_label)
 
     def _update_status_bar_style(self):
-        status_style = self._theme_value(
-            """
-                QStatusBar {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-                        stop:0 #ffffff, stop:1 #f8fafc);
-                    border-top: 1px solid #e2e8f0;
-                    padding: 4px;
-                }
-                QStatusBar::item {
-                    border: none;
-                    padding: 4px 8px;
-                }
-            """,
-            """
-                QStatusBar {
-                    background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-                        stop:0 #313244, stop:1 #1e1e2e);
-                    border-top: 1px solid #45475a;
-                    padding: 4px;
-                    color: #cdd6f4;
-                }
-                QStatusBar::item {
-                    border: none;
-                    padding: 4px 8px;
-                    color: #cdd6f4;
-                }
-            """,
-        )
+        status_style = """
+            QStatusBar {
+                background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
+                    stop:0 #ffffff, stop:1 #f8fafc);
+                border-top: 1px solid #e2e8f0;
+                padding: 4px;
+            }
+            QStatusBar::item {
+                border: none;
+                padding: 4px 8px;
+            }
+        """
         self.statusBar().setStyleSheet(status_style)
 
     def _setup_timer(self):
@@ -188,75 +253,67 @@ class MainWindow(QMainWindow):
 
     def _setup_layout(self):
         self.ui.groupBox.setContentsMargins(10, 10, 10, 10)
+        # Remove designer max-height caps so both panels can stretch equally.
+        self.ui.groupBox.setMaximumHeight(16777215)
+        self.ui.listWidget.setMaximumHeight(16777215)
+        # Use layout to keep both panels the same height automatically.
+        if self.ui.centralwidget.layout() is None:
+            layout = QHBoxLayout(self.ui.centralwidget)
+            layout.setContentsMargins(12, 18, 12, 18)
+            layout.setSpacing(16)
+            # Wrap the list in a styled container to ensure visible rounded corners.
+            self._list_container = QWidget(self.ui.centralwidget)
+            self._list_container.setObjectName("listContainer")
+            self._list_container.setAttribute(Qt.WA_StyledBackground, True)
+            inner_layout = QVBoxLayout(self._list_container)
+            inner_layout.setContentsMargins(0, 0, 0, 0)
+            inner_layout.setSpacing(0)
+            self.ui.listWidget.setParent(self._list_container)
+            self.ui.listWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            # Center horizontally, allow full height.
+            inner_layout.addWidget(self.ui.listWidget, 1, Qt.AlignHCenter)
+            self._list_container.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Expanding)
+            self._list_container.setMaximumWidth(16777215)
+            self._list_container.setMinimumWidth(self.ui.listWidget.sizeHint().width() + 16)
+            self._list_container.setStyleSheet(LIST_CONTAINER_STYLE)
+            self.ui.groupBox.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+            layout.addWidget(self._list_container)
+            layout.addWidget(self.ui.groupBox, 1)
+        else:
+            # Ensure margins stay in sync if layout already exists.
+            self.ui.centralwidget.layout().setContentsMargins(12, 18, 12, 18)
+            self.ui.centralwidget.layout().setSpacing(16)
+            if hasattr(self, "_list_container"):
+                self._list_container.setStyleSheet(LIST_CONTAINER_STYLE)
+        self._resize_panels()
+        self._adjust_list_width()
 
     def _setup_shortcuts(self):
-        shortcut = QShortcut("Ctrl+F", self)
-        shortcut.activated.connect(self.show_search_dialog)
+        self._search_shortcut = QShortcut("Ctrl+F", self)
+        self._search_shortcut.activated.connect(self.show_search_dialog)
+
+        app = QApplication.instance()
+        if app is not None:
+            app.installEventFilter(self)
 
     def update_time(self):
         current_time = QDateTime.currentDateTime().toString("yyyy-MM-dd HH:mm:ss")
         self.time_label.setText(current_time)
 
-    def switch_theme(self):
-        self.theme_manager.switch_theme()
-        self._apply_theme()
-        theme_name = "深色" if self.theme_manager.is_dark_theme() else "浅色"
-        self.statusBar().showMessage(f"已切换到{theme_name}", 2000)
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._resize_panels()
 
-    def _apply_theme(self):
-        self._setup_main_styles()
-        self._setup_widget_styles()
-        self._update_tool_buttons_style()
-        self._update_status_bar_style()
-        self._refresh_menu_styles()
-
-    def _update_tool_buttons_style(self):
-        layout = self.ui.groupBox.layout()
-        if layout is None:
+    def _resize_panels(self):
+        # If a layout is set, it keeps both panels aligned; just ensure margins stay consistent.
+        layout = self.ui.centralwidget.layout()
+        if layout is not None:
+            layout.setContentsMargins(10, 20, 10, 20)
             return
-
-        button_style = self._theme_value(TOOL_BUTTON_STYLE, TOOL_BUTTON_DARK_STYLE)
-
-        def refresh_layout(target_layout):
-            for index in range(target_layout.count()):
-                item = target_layout.itemAt(index)
-                if item is None:
-                    continue
-
-                widget = item.widget()
-                if isinstance(widget, QPushButton):
-                    widget.setStyleSheet(button_style)
-                    widget.ensurePolished()
-                    style = widget.style()
-                    if style is not None:
-                        style.unpolish(widget)
-                        style.polish(widget)
-                    widget.update()
-
-                child_layout = item.layout()
-                if child_layout is not None:
-                    refresh_layout(child_layout)
-
-        refresh_layout(layout)
 
     def _configure_menus(self):
         for menu in self.menuBar().findChildren(QMenu):
             self._prepare_menu(menu)
-
-    def _refresh_menu_styles(self):
-        def refresh(menu):
-            menu.setStyleSheet("")
-            style = menu.style()
-            if style is not None:
-                style.unpolish(menu)
-                style.polish(menu)
-            self._apply_menu_flags(menu)
-            menu.update()
-            for child in menu.findChildren(QMenu):
-                refresh(child)
-
-        for root_menu in self.menuBar().findChildren(QMenu):
-            refresh(root_menu)
 
     def _prepare_menu(self, menu):
         if menu.property("_polished_menu"):
@@ -296,7 +353,7 @@ class MainWindow(QMainWindow):
         dialog.setMaximumSize(600, 500)
         dialog.setWindowFlags(dialog.windowFlags() | Qt.WindowStaysOnTopHint)
 
-        dialog.setStyleSheet(self._theme_value(DIALOG_STYLE, DIALOG_DARK_STYLE))
+        dialog.setStyleSheet(DIALOG_STYLE)
 
         main_layout = QVBoxLayout(dialog)
         main_layout.setSpacing(20)
@@ -314,12 +371,12 @@ class MainWindow(QMainWindow):
         layout.setSpacing(10)
 
         title_label = QLabel("关于工具箱")
-        title_label.setStyleSheet(self._theme_value(DIALOG_LABEL_TITLE_STYLE, DIALOG_LABEL_TITLE_DARK_STYLE))
+        title_label.setStyleSheet(DIALOG_LABEL_TITLE_STYLE)
         title_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(title_label)
 
         version_label = QLabel("Version 3.0")
-        version_label.setStyleSheet(self._theme_value(DIALOG_LABEL_VERSION_STYLE, DIALOG_LABEL_VERSION_DARK_STYLE))
+        version_label.setStyleSheet(DIALOG_LABEL_VERSION_STYLE)
         version_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(version_label)
 
@@ -330,19 +387,19 @@ class MainWindow(QMainWindow):
         layout.setSpacing(15)
 
         author_label = QLabel("作者：Rml@dr0n1")
-        author_label.setStyleSheet(self._theme_value(DIALOG_LABEL_INFO_STYLE, DIALOG_LABEL_INFO_DARK_STYLE))
+        author_label.setStyleSheet(DIALOG_LABEL_INFO_STYLE)
         layout.addWidget(author_label)
 
         website_label = QLabel("blog：https://www.dr0n.top/")
-        website_label.setStyleSheet(self._theme_value(DIALOG_LABEL_INFO_STYLE, DIALOG_LABEL_INFO_DARK_STYLE))
+        website_label.setStyleSheet(DIALOG_LABEL_INFO_STYLE)
         layout.addWidget(website_label)
 
         desc_label = QLabel("简介")
-        desc_label.setStyleSheet(self._theme_value(DIALOG_LABEL_DESC_TITLE_STYLE, DIALOG_LABEL_DESC_TITLE_DARK_STYLE))
+        desc_label.setStyleSheet(DIALOG_LABEL_DESC_TITLE_STYLE)
         layout.addWidget(desc_label)
 
         desc_text = QLabel("面向 Windows 的本地渗透/安全研究工具启动器。应用使用 PySide6 构建单窗口界面，内置 SQLite 数据库保存工具清单，支持一键启动脚本、二进制或打开目录/网页，并提供可视化的环境与数据库管理能力。")
-        desc_text.setStyleSheet(self._theme_value(DIALOG_LABEL_DESC_TEXT_STYLE, DIALOG_LABEL_DESC_TEXT_DARK_STYLE))
+        desc_text.setStyleSheet(DIALOG_LABEL_DESC_TEXT_STYLE)
         desc_text.setWordWrap(True)
         desc_text.setAlignment(Qt.AlignTop)
         desc_text.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
@@ -356,12 +413,12 @@ class MainWindow(QMainWindow):
         layout.setSizeConstraint(QHBoxLayout.SetMinAndMaxSize)
 
         website_btn = QPushButton("完整版下载")
-        website_btn.setStyleSheet(self._theme_value(DIALOG_BUTTON_PRIMARY_STYLE, DIALOG_BUTTON_PRIMARY_DARK_STYLE))
+        website_btn.setStyleSheet(DIALOG_BUTTON_PRIMARY_STYLE)
         website_btn.clicked.connect(lambda: webbrowser.open("https://pan.quark.cn/s/b134d9a371d5"))
         website_btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
         close_btn = QPushButton("关闭")
-        close_btn.setStyleSheet(self._theme_value(DIALOG_BUTTON_SECONDARY_STYLE, DIALOG_BUTTON_SECONDARY_DARK_STYLE))
+        close_btn.setStyleSheet(DIALOG_BUTTON_SECONDARY_STYLE)
         close_btn.clicked.connect(dialog.accept)
         close_btn.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
 
@@ -375,24 +432,88 @@ class MainWindow(QMainWindow):
         show_database_dialog(self)
         self.load_modules()
 
+    def refresh_database(self):
+        current_item = self.ui.listWidget.currentItem()
+        current_name = current_item.text() if current_item else None
+
+        self.load_modules()
+
+        target_item = None
+        if current_name:
+            matches = self.ui.listWidget.findItems(current_name, Qt.MatchExactly)
+            if matches:
+                target_item = matches[0]
+
+        if target_item is None and self.ui.listWidget.count() > 0:
+            target_item = self.ui.listWidget.item(0)
+
+        if target_item:
+            self.ui.listWidget.setCurrentItem(target_item)
+            self.on_module_clicked(target_item)
+
+        try:
+            self.statusBar().showMessage("数据库已刷新", 2000)
+        except Exception:
+            pass
+
+    def restore_database_defaults(self):
+        db_restore_database_defaults(self, self.refresh_database)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QEvent.ToolTip:
+            text = ""
+            if isinstance(obj, QWidget):
+                text = obj.toolTip()
+            if hasattr(self, "_tooltip"):
+                self._tooltip.show_text(text, event.globalPos())
+            return True
+        if event.type() in (QEvent.Leave, QEvent.MouseButtonPress, QEvent.FocusOut):
+            if hasattr(self, "_tooltip"):
+                self._tooltip.hide()
+        if event.type() == QEvent.KeyPress and event.key() == Qt.Key_F5:
+            if event.modifiers() & Qt.ShiftModifier:
+                self.restore_database_defaults()
+                return True
+        return super().eventFilter(obj, event)
+
     def env(self):
         show_env_dialog(self, env)
         self.load_config_env()
 
     def load_modules(self):
         self.ui.listWidget.clear()
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('SELECT name FROM modules ORDER BY sort_order, id')
             modules = [row[0] for row in c.fetchall()]
         for module_name in modules:
-            self.ui.listWidget.addItem(module_name)
+            item = QListWidgetItem(module_name)
+            item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            self.ui.listWidget.addItem(item)
+        self._adjust_list_width()
+
+    def _adjust_list_width(self):
+        # Center items and size the list based on the widest text so left/right padding matches.
+        count = self.ui.listWidget.count()
+        if count == 0:
+            return
+        fm = self.ui.listWidget.fontMetrics()
+        max_text_width = max(fm.horizontalAdvance(self.ui.listWidget.item(i).text()) for i in range(count))
+        # Add generous padding so text never elides; keep consistent side space.
+        list_width = max(max_text_width + 64, 180)
+        self.ui.listWidget.setMinimumWidth(list_width)
+        self.ui.listWidget.setMaximumWidth(list_width)
+
+        if hasattr(self, "_list_container"):
+            container_width = list_width + 28  # container padding 14*2
+            self._list_container.setMinimumWidth(container_width)
+            self._list_container.setMaximumWidth(container_width)
 
     def load_config_env(self):
         # 从 config 表读取运行环境配置并回填到 env 对象，优先使用自定义路径
         try:
             env.load_env()
-            with sqlite3.connect("tools.db") as conn:
+            with sqlite3.connect(DB_PATH) as conn:
                 c = conn.cursor()
                 c.execute("SELECT config_key, config_value FROM config")
                 cfg = {k: v for k, v in c.fetchall()}
@@ -437,7 +558,7 @@ class MainWindow(QMainWindow):
         module_name = item.text()
         self.clear_tool_buttons()
 
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('SELECT id FROM modules WHERE name = ?', (module_name,))
             module_row = c.fetchone()
@@ -514,7 +635,7 @@ class MainWindow(QMainWindow):
 
     def _create_tool_button(self, tool_name, description, module_name, entry_path, runtime_key, arguments):
         button = QPushButton(tool_name)
-        button.setStyleSheet(self._theme_value(TOOL_BUTTON_STYLE, TOOL_BUTTON_DARK_STYLE))
+        button.setStyleSheet(TOOL_BUTTON_STYLE)
         button.setToolTip(description)
         button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         button.clicked.connect(
@@ -540,7 +661,7 @@ class MainWindow(QMainWindow):
                 child.widget().deleteLater()
 
     def on_tool_button_clicked(self, module_name, entry_path, runtime_key, arguments):
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('SELECT directory FROM modules WHERE name = ?', (module_name,))
             module_row = c.fetchone()
@@ -761,7 +882,7 @@ class MainWindow(QMainWindow):
         dialog.setFixedSize(450, 350)
         dialog.setWindowFlags(dialog.windowFlags() | Qt.WindowStaysOnTopHint)
 
-        dialog.setStyleSheet(self._theme_value(SEARCH_DIALOG_STYLE, SEARCH_DIALOG_DARK_STYLE))
+        dialog.setStyleSheet(SEARCH_DIALOG_STYLE)
 
         layout = QVBoxLayout(dialog)
         layout.setSpacing(12)
@@ -780,12 +901,12 @@ class MainWindow(QMainWindow):
     def _create_search_input(self):
         search_input = QLineEdit()
         search_input.setPlaceholderText("请输入关键字...")
-        search_input.setStyleSheet(self._theme_value(SEARCH_INPUT_STYLE, SEARCH_INPUT_DARK_STYLE))
+        search_input.setStyleSheet(SEARCH_INPUT_STYLE)
         return search_input
 
     def _create_result_list(self):
         result_list = QListWidget()
-        result_list.setStyleSheet(self._theme_value(SEARCH_RESULT_LIST_STYLE, SEARCH_RESULT_LIST_DARK_STYLE))
+        result_list.setStyleSheet(SEARCH_RESULT_LIST_STYLE)
         return result_list
 
     def perform_search(self, text, result_list):
@@ -795,7 +916,7 @@ class MainWindow(QMainWindow):
         except Exception:
             pass
 
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute(
                 '''
@@ -817,7 +938,7 @@ class MainWindow(QMainWindow):
     def on_search_result_clicked(self, item):
         tool_name = item.text().split(" - ")[0]
 
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute(
                 '''

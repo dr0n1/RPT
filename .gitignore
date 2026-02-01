@@ -4,4 +4,7 @@
 /styles/__pycache__
 styles/main.ui
 *.db
-
+/ENV
+/__pycache__
+/tools_*
+/.vscode

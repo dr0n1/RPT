@@ -40,8 +40,6 @@ class Ui_MainWindow(object):
         self.action_dr0n1.setObjectName(u"action_dr0n1")
         self.action_database = QAction(MainWindow)
         self.action_database.setObjectName(u"action_database")
-        self.action_theme = QAction(MainWindow)
-        self.action_theme.setObjectName(u"action_theme")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.groupBox = QGroupBox(self.centralwidget)
@@ -70,7 +68,6 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menu_4.menuAction())
         self.menu_3.addAction(self.action_env)
         self.menu_3.addAction(self.action_database)
-        self.menu_3.addAction(self.action_theme)
         self.menu_4.addAction(self.action_about)
 
         self.retranslateUi(MainWindow)
@@ -90,7 +87,6 @@ class Ui_MainWindow(object):
         self.action_about.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e\u5de5\u5177\u7bb1", None))
         self.action_dr0n1.setText(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e\u4f5c\u8005", None))
         self.action_database.setText(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u5e93", None))
-        self.action_theme.setText(QCoreApplication.translate("MainWindow", u"\u4e3b\u9898\u5207\u6362", None))
         self.menu_3.setTitle(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.menu_4.setTitle(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
 

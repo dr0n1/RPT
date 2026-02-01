@@ -25,23 +25,16 @@ from PySide6.QtWidgets import (
 
 from styles import (
     apply_stylesheet,
-    ENV_BUTTON_DARK_STYLE,
     ENV_BUTTON_STYLE,
-    ENV_CANCEL_BUTTON_DARK_STYLE,
     ENV_CANCEL_BUTTON_STYLE,
-    ENV_DIALOG_DARK_STYLE,
     ENV_DIALOG_STYLE,
-    ENV_GROUPBOX_DARK_STYLE,
     ENV_GROUPBOX_STYLE,
-    ENV_LINE_EDIT_DARK_STYLE,
     ENV_LINE_EDIT_STYLE,
-    ENV_RADIO_BUTTON_DARK_STYLE,
     ENV_RADIO_BUTTON_STYLE,
-    ENV_SAVE_BUTTON_DARK_STYLE,
     ENV_SAVE_BUTTON_STYLE,
-    ENV_STATUS_LABEL_DARK_STYLE,
     ENV_STATUS_LABEL_STYLE,
 )
+from db import DB_PATH
 
 UNKNOWN_VERSION_MSG = "未知版本"
 TIMEOUT_MSG = "检测超时"
@@ -84,14 +77,12 @@ env.load_env()
 def show_env_dialog(parent, env_obj=None):
     # 弹出环境配置对话框，允许选择内置或系统的 Python/Java 并写回配置
     env_obj = env_obj or env
-    theme_manager = getattr(parent, 'theme_manager', None)
-    is_dark_theme = theme_manager.is_dark_theme() if theme_manager else False
 
     dlg = QDialog(parent)
     dlg.setWindowTitle("环境配置")
     dlg.resize(700, 400)
 
-    apply_stylesheet(dlg, ENV_DIALOG_STYLE, ENV_DIALOG_DARK_STYLE, is_dark_theme)
+    apply_stylesheet(dlg, ENV_DIALOG_STYLE)
 
     dlg._workers = []
     layout = QVBoxLayout(dlg)
@@ -99,7 +90,7 @@ def show_env_dialog(parent, env_obj=None):
     layout.setContentsMargins(20, 20, 20, 20)
 
     py_group = QGroupBox("📦 Python3 配置", dlg)
-    apply_stylesheet(py_group, ENV_GROUPBOX_STYLE, ENV_GROUPBOX_DARK_STYLE, is_dark_theme)
+    apply_stylesheet(py_group, ENV_GROUPBOX_STYLE)
 
     py_layout = QHBoxLayout(py_group)
     py_layout.setSpacing(12)
@@ -110,10 +101,10 @@ def show_env_dialog(parent, env_obj=None):
     py_info.setReadOnly(True)
     py_btn = QPushButton("🔍 自动识别/选择")
 
-    apply_stylesheet(py_builtin, ENV_RADIO_BUTTON_STYLE, ENV_RADIO_BUTTON_DARK_STYLE, is_dark_theme)
-    apply_stylesheet(py_custom, ENV_RADIO_BUTTON_STYLE, ENV_RADIO_BUTTON_DARK_STYLE, is_dark_theme)
-    apply_stylesheet(py_info, ENV_LINE_EDIT_STYLE, ENV_LINE_EDIT_DARK_STYLE, is_dark_theme)
-    apply_stylesheet(py_btn, ENV_BUTTON_STYLE, ENV_BUTTON_DARK_STYLE, is_dark_theme)
+    apply_stylesheet(py_builtin, ENV_RADIO_BUTTON_STYLE)
+    apply_stylesheet(py_custom, ENV_RADIO_BUTTON_STYLE)
+    apply_stylesheet(py_info, ENV_LINE_EDIT_STYLE)
+    apply_stylesheet(py_btn, ENV_BUTTON_STYLE)
 
     py_layout.addWidget(py_builtin)
     py_layout.addWidget(py_custom)
@@ -121,7 +112,7 @@ def show_env_dialog(parent, env_obj=None):
     py_layout.addWidget(py_btn)
 
     java_group = QGroupBox("☕ Java 配置", dlg)
-    apply_stylesheet(java_group, ENV_GROUPBOX_STYLE, ENV_GROUPBOX_DARK_STYLE, is_dark_theme)
+    apply_stylesheet(java_group, ENV_GROUPBOX_STYLE)
 
     java_layout = QHBoxLayout(java_group)
     java_layout.setSpacing(12)
@@ -132,10 +123,10 @@ def show_env_dialog(parent, env_obj=None):
     java_info.setReadOnly(True)
     java_btn = QPushButton("🔍 自动识别/选择")
 
-    apply_stylesheet(java_builtin, ENV_RADIO_BUTTON_STYLE, ENV_RADIO_BUTTON_DARK_STYLE, is_dark_theme)
-    apply_stylesheet(java_custom, ENV_RADIO_BUTTON_STYLE, ENV_RADIO_BUTTON_DARK_STYLE, is_dark_theme)
-    apply_stylesheet(java_info, ENV_LINE_EDIT_STYLE, ENV_LINE_EDIT_DARK_STYLE, is_dark_theme)
-    apply_stylesheet(java_btn, ENV_BUTTON_STYLE, ENV_BUTTON_DARK_STYLE, is_dark_theme)
+    apply_stylesheet(java_builtin, ENV_RADIO_BUTTON_STYLE)
+    apply_stylesheet(java_custom, ENV_RADIO_BUTTON_STYLE)
+    apply_stylesheet(java_info, ENV_LINE_EDIT_STYLE)
+    apply_stylesheet(java_btn, ENV_BUTTON_STYLE)
 
     java_layout.addWidget(java_builtin)
     java_layout.addWidget(java_custom)
@@ -146,7 +137,7 @@ def show_env_dialog(parent, env_obj=None):
     layout.addWidget(java_group)
 
     status_label = QLabel("")
-    apply_stylesheet(status_label, ENV_STATUS_LABEL_STYLE, ENV_STATUS_LABEL_DARK_STYLE, is_dark_theme)
+    apply_stylesheet(status_label, ENV_STATUS_LABEL_STYLE)
     layout.addWidget(status_label)
 
     btn_layout = QHBoxLayout()
@@ -154,8 +145,8 @@ def show_env_dialog(parent, env_obj=None):
     btn_ok = QPushButton("✅ 保存")
     btn_cancel = QPushButton("❌ 取消")
 
-    apply_stylesheet(btn_ok, ENV_SAVE_BUTTON_STYLE, ENV_SAVE_BUTTON_DARK_STYLE, is_dark_theme)
-    apply_stylesheet(btn_cancel, ENV_CANCEL_BUTTON_STYLE, ENV_CANCEL_BUTTON_DARK_STYLE, is_dark_theme)
+    apply_stylesheet(btn_ok, ENV_SAVE_BUTTON_STYLE)
+    apply_stylesheet(btn_cancel, ENV_CANCEL_BUTTON_STYLE)
 
     btn_layout.addStretch()
     btn_layout.addWidget(btn_ok)
@@ -164,7 +155,7 @@ def show_env_dialog(parent, env_obj=None):
     btn_cancel.clicked.connect(dlg.reject)
 
     def get_cfg(key, default=None):
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('CREATE TABLE IF NOT EXISTS config (config_key TEXT PRIMARY KEY, config_value TEXT)')
             c.execute('SELECT config_value FROM config WHERE config_key = ?', (key,))
@@ -447,7 +438,7 @@ def show_env_dialog(parent, env_obj=None):
 
     def save_env():
         # 将当前选择的运行时模式与路径写入 config 表
-        with sqlite3.connect('tools.db') as conn:
+        with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('CREATE TABLE IF NOT EXISTS config (config_key TEXT PRIMARY KEY, config_value TEXT)')
 
