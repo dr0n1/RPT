@@ -457,7 +457,11 @@ class MainWindow(QMainWindow):
             pass
 
     def restore_database_defaults(self):
-        db_restore_database_defaults(self, self.refresh_database)
+        db_restore_database_defaults(
+            self,
+            self.refresh_database,
+            getattr(self, "_db_dialog_refresh", None),
+        )
 
     def eventFilter(self, obj, event):
         if event.type() == QEvent.ToolTip:

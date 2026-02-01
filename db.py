@@ -98,8 +98,8 @@ def insert_default_data(cursor):
         ("提权", "tools_privilege", "本地与远程提权工具"),
         ("WebShell管理", "tools_webshell", "常用 WebShell 管理工具"),
         ("CTF", "tools_ctf", "CTF 竞赛常用辅助工具"),
-        ("reverse", "tools_reverse", "CTF reverse工具"),
-        ("misc", "tools_misc", "CTF misc工具"),
+        ("reverse", "tools_reverse", "二进制/逆向工具"),
+        ("misc", "tools_misc", "其他工具"),
     ]
 
     for order, (name, directory, description) in enumerate(module_defaults):
@@ -289,7 +289,7 @@ def _exec_message_box(parent, title, text, icon, buttons, default_button):
     return box.exec()
 
 
-def _restore_database_defaults(dialog, parent, *reload_callbacks):
+def _restore_database_defaults(dialog, parent, *reload_callbacks, default_button=QMessageBox.No):
     # 用户确认后清空三张表并恢复默认数据，同时刷新界面展示
     confirm = _exec_message_box(
         dialog,
@@ -297,7 +297,7 @@ def _restore_database_defaults(dialog, parent, *reload_callbacks):
         "⚠️ 警告：此操作将删除所有自定义数据并恢复为默认配置！",
         QMessageBox.Icon.Warning,
         QMessageBox.Yes | QMessageBox.No,
-        QMessageBox.No,
+        default_button,
     )
     if confirm != QMessageBox.Yes:
         return False
@@ -342,7 +342,7 @@ def _restore_database_defaults(dialog, parent, *reload_callbacks):
 def restore_database_defaults(dialog, *reload_callbacks):
     # 用于全局快捷键触发的恢复默认（不依赖外层窗口回调）
     callbacks = [cb for cb in reload_callbacks if callable(cb)]
-    return _restore_database_defaults(dialog, None, *callbacks)
+    return _restore_database_defaults(dialog, None, *callbacks, default_button=QMessageBox.Yes)
 
 
 def show_database_dialog(parent):
@@ -379,13 +379,24 @@ def show_database_dialog(parent):
     )
     _load_tool_data(tool_table)
 
+    def refresh_dialog_tables():
+        _load_module_data(module_table)
+        _load_tool_data(tool_table)
+
+    if parent is not None:
+        parent._db_dialog_refresh = refresh_dialog_tables
+
     def closeEvent(event):
         if hasattr(parent, 'load_modules'):
             parent.load_modules()
         event.accept()
     dialog.closeEvent = closeEvent
 
-    result = dialog.exec()
+    try:
+        result = dialog.exec()
+    finally:
+        if parent is not None and getattr(parent, "_db_dialog_refresh", None) is refresh_dialog_tables:
+            parent._db_dialog_refresh = None
     return result == QDialog.Accepted
 
 
