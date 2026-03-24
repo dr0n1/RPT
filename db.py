@@ -182,6 +182,7 @@ def get_default_tools(module_ids):
         (module_ids["cms/oa利用工具"], "TongdaOATool", "通达OA漏洞检测工具", "tongda\\TongdaTools.jar", "java11_gui", "", "https://github.com/xiaokp7/TongdaOATool"),
 
         (module_ids["综合利用工具"], "mdut", "中文的数据库跨平台利用工具", "mdut\\Multiple.Database.Utilization.Tools-2.1.1-jar-with-dependencies.jar", "java11_gui", "", "https://github.com/SafeGroceryStore/MDUT"),
+        (module_ids["综合利用工具"], "mdut-Extend", "MDUT-Extend(扩展版本)", "MDUT-Extend\\Multiple.Database.Utilization.Tools-2.1.1-Extend-1.3.0-CE-jar-with-dependencies.jar", "java11_gui", "", "https://github.com/DeEpinGh0st/MDUT-Extend-Release"),
         (module_ids["综合利用工具"], "蓝队分析研判工具箱", "蓝队分析研判工具箱", "BlueTeamTools\\BlueTeam_ABC_123.jar", "java11_gui", "", "https://github.com/abc123info/BlueTeamTools"),
         (module_ids["综合利用工具"], "API-Explorer", "API接口管理工具", "API-Explorer\\API-Explorer.exe", "exe_gui", "", "https://github.com/mrknow001/API-Explorer"),
         (module_ids["综合利用工具"], "aliyun-accesskey-Tools", "阿里云accesskey利用工具", "aliyun\\Aliyun-.AK.Tools-V1.3.exe", "exe_gui", "", "https://github.com/mrknow001/aliyun-accesskey-Tools"),
@@ -224,11 +225,14 @@ def get_default_tools(module_ids):
 
         (module_ids["提权"], "linux-exploit-suggester", "Linux privilege escalation auditing tool", "linux-exploit-suggester", "file_folder", "", "https://github.com/The-Z-Labs/linux-exploit-suggester/"),
         (module_ids["提权"], "windows-kernel-exploits", "Windows平台提权漏洞集合", "windows-kernel-exploits", "file_folder", "","https://github.com/SecWiki/windows-kernel-exploits"),
+        (module_ids["提权"], "traitor", "linux自动提权", "traitor", "file_folder", "", "https://github.com/liamg/traitor"),
+        (module_ids["提权"], "PEASS-ng", "自动提权", "PEASS-ng", "file_folder", "", "https://github.com/peass-ng/PEASS-ng"),
 
         (module_ids["reverse"], "GDRE", "Godot RE Tools", "GDRE_tools-v2.4.0-windows\\gdre_tools.exe", "exe_gui", "","https://github.com/GDRETools/gdsdecomp"),
         (module_ids["reverse"], "wabt", "The WebAssembly Binary Toolkit", "wabt-1.0.39\\bin", "file_folder", "","https://github.com/WebAssembly/wabt"),
 
         (module_ids["misc"], "ToolsFx", "跨平台密码学工具箱。", "ToolsFx-1.19.0-withjre-win-x64\\ToolsFx.exe", "exe_gui", "","https://github.com/Leon406/ToolsFx"),
+        (module_ids["misc"], "busybox", "linux工具箱。", "busybox", "file_folder", "", "https://www.busybox.net/"),
     ]
 
     processed_defaults = []
