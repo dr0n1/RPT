@@ -33,7 +33,7 @@ SHIFT+F5 恢复默认配置
 | 哥斯拉 | https://github.com/BeichenDream/Godzilla | v4.0.1 |
 | 蚁剑 | https://github.com/AntSwordProject/antSword | v2.1.15 |
 | | | |
-| Swagger | https://github.com/jayus0821/swagger-hack | 2.0 |
+| Swagger | https://github.com/jayus0821/swagger-hack | v2.0 |
 | dirsearch_bypass403 | https://github.com/lemonlove7/dirsearch_bypass403 | v3.1 |
 | OneForAll | https://github.com/shmilylty/OneForAll | v0.4.5 |
 | Findomain | https://github.com/Findomain/Findomain | v10.0.1 |
@@ -50,23 +50,23 @@ SHIFT+F5 恢复默认配置
 | SpringBoot-Scan | https://github.com/AabyssZG/SpringBoot-Scan | V2.7.2 |
 | OA-EXPTOOL | https://github.com/LittleBear4/OA-EXPTOOL | v0.83 |
 | Thinkphp | https://github.com/Lotus6/ThinkphpGUI | V1.3 |
-| nacos | https://github.com/charonlight/NacosExploitGUI | 404 not found |
+| nacos | https://github.com/charonlight/NacosExploitGUI | - |
 | confluence | https://github.com/Lotus6/ConfluenceMemshell | V1.1 |
 | ShiroAttack2 | https://github.com/SummerSec/ShiroAttack2 | v4.7.0 |
 | JDumpSpider | https://github.com/whwlsfb/JDumpSpider | 20250409T071858 |
 | heapdump_tool | https://github.com/wyzxxz/heapdump_tool | 20230425 |
 | SpringBootExploit | https://github.com/0x727/SpringBootExploit | v1.3 |
-| SpringExploitGUI | https://github.com/charonlight/SpringExploitGUI | 404 not found |
+| SpringExploitGUI | https://github.com/charonlight/SpringExploitGUI | - |
 | JenkinsExploit-GUI | https://github.com/TheBeastofwar/JenkinsExploit-GUI | v1.3 |
-| Struts2VulsScanTools | https://github.com/abc123info/Struts2VulsScanTools | 19.73 |
-| xxl-jobExploitGUI | https://github.com/charonlight/xxl-jobExploitGUI | 404 not found |
+| Struts2VulsScanTools | https://github.com/abc123info/Struts2VulsScanTools | v19.73 |
+| xxl-jobExploitGUI | https://github.com/charonlight/xxl-jobExploitGUI | - |
 | WeblogicTool | https://github.com/KimJun1010/WeblogicTool | v1.3 |
 | dahuaExploitGUI | https://github.com/MInggongK/dahuaExploitGUI | v2.4 |
 | jeecg- | https://github.com/MInggongK/jeecg- | v4.2 |
 | Jeecg_Tools | https://github.com/K-7H7l/Jeecg_Tools | v1.0 |
 | redis-rogue-server | https://github.com/n0b0dyCN/redis-rogue-server | - |
 | | | |
-| 若依RuoYi | https://github.com/charonlight/RuoYiExploitGUI | 404 not found |
+| 若依RuoYi | https://github.com/charonlight/RuoYiExploitGUI | - |
 | 帆软 | https://github.com/7wkajk/Frchannel | v3 |
 | 帆软 plus | https://github.com/BambiZombie/FrchannelPlus | - |
 | 用友 | https://github.com/Chave0v0/YONYOU-TOOL | v2.0.9 |
