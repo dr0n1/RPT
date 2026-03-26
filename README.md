@@ -76,7 +76,6 @@ SHIFT+F5 恢复默认配置
 | TongdaOATool | https://github.com/xiaokp7/TongdaOATool | v1.6 |
 | | | |
 | mdut | https://github.com/SafeGroceryStore/MDUT | v2.1.1 |
-| mdut-Extend | https://github.com/DeEpinGh0st/MDUT-Extend-Release | v1.3.0 |
 | 蓝队分析研判工具箱 | https://github.com/abc123info/BlueTeamTools | v3.58 |
 | API-Explorer | https://github.com/mrknow001/API-Explorer | v2.1.0 |
 | aliyun-accesskey-Tools | https://github.com/mrknow001/aliyun-accesskey-Tools | v1.3 |
