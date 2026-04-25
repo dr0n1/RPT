@@ -207,7 +207,8 @@ def get_default_tools(module_ids):
         (module_ids["内网域工具"], "kekeo", "一个用于在 C 语言中操作 Microsoft Kerberos 的小工具箱", "kekeo", "file_folder", "", "https://github.com/gentilkiwi/kekeo"),
         (module_ids["内网域工具"], "PowerSploit", "A PowerShell Post-Exploitation Framework", "PowerSploit", "file_folder", "", "https://github.com/PowerShellMafia/PowerSploit/"),
         (module_ids["内网域工具"], "SharpHound", "C# Data Collector for BloodHound", "SharpHound","file_folder", "", "https://github.com/SpecterOps/SharpHound"),
-        (module_ids["内网域工具"], "Rubeus", "Trying to tame the three-headed dog.", "Rubeus-1.6.4", "file_folder", "", "https://github.com/GhostPack/Rubeus"),
+        (module_ids["内网域工具"], "Rubeus", "Kerberos 攻击工具", "Rubeus-1.6.4", "file_folder", "", "https://github.com/GhostPack/Rubeus"),
+        (module_ids["内网域工具"], "kerberoast", "Kerberos 攻击工具", "kerberoast", "file_folder", "", "https://github.com/nidem/kerberoast"),
 
         (module_ids["隧道"], "Stowaway", "多级代理工具", "Stowaway", "file_folder", "", "https://github.com/ph4ntonn/Stowaway"),
         (module_ids["隧道"], "iox", "端口转发 & 内网代理工具", "iox", "file_folder", "", "https://github.com/EddieIvan01/iox"),
