@@ -209,6 +209,8 @@ def get_default_tools(module_ids):
         (module_ids["内网域工具"], "SharpHound", "C# Data Collector for BloodHound", "SharpHound","file_folder", "", "https://github.com/SpecterOps/SharpHound"),
         (module_ids["内网域工具"], "Rubeus", "Kerberos 攻击工具", "Rubeus-1.6.4", "file_folder", "", "https://github.com/GhostPack/Rubeus"),
         (module_ids["内网域工具"], "kerberoast", "Kerberos 攻击工具", "kerberoast", "file_folder", "", "https://github.com/nidem/kerberoast"),
+        (module_ids["内网域工具"], "AdFind", "命令行 Active Directory 查询工具", "AdFind", "file_folder", "", "https://www.joeware.net/freetools/tools/adfind/"),
+        (module_ids["内网域工具"], "SpoolSample", "此概念验证工具可强制 Windows 主机通过 MS-RPRN RPC 接口向其他计算机进行身份验证。", "SpoolSample", "file_folder", "", "https://www.joeware.net/freetools/tools/adfind/"),
 
         (module_ids["隧道"], "Stowaway", "多级代理工具", "Stowaway", "file_folder", "", "https://github.com/ph4ntonn/Stowaway"),
         (module_ids["隧道"], "iox", "端口转发 & 内网代理工具", "iox", "file_folder", "", "https://github.com/EddieIvan01/iox"),
