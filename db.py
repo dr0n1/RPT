@@ -230,6 +230,9 @@ def get_default_tools(module_ids):
         (module_ids["提权"], "windows-kernel-exploits", "Windows平台提权漏洞集合", "windows-kernel-exploits", "file_folder", "","https://github.com/SecWiki/windows-kernel-exploits"),
         (module_ids["提权"], "traitor", "linux自动提权", "traitor", "file_folder", "", "https://github.com/liamg/traitor"),
         (module_ids["提权"], "PEASS-ng", "自动提权", "PEASS-ng", "file_folder", "", "https://github.com/peass-ng/PEASS-ng"),
+        (module_ids["提权"], "copy-fail", "CVE-2026-31431", "copy-fail", "file_folder", "", "https://github.com/theori-io/copy-fail-CVE-2026-31431"),
+        (module_ids["提权"], "dirtyfrag", "Universal Linux LPE", "dirtyfrag", "file_folder", "","https://github.com/V4bel/dirtyfrag"),
+        (module_ids["提权"], "CVE-2021-4034", "CVE-2021-4034", "CVE-2021-4034", "file_folder", "","https://github.com/theori-io/copy-fail-CVE-2026-31431"),
 
         (module_ids["reverse"], "GDRE", "Godot RE Tools", "GDRE_tools-v2.4.0-windows\\gdre_tools.exe", "exe_gui", "","https://github.com/GDRETools/gdsdecomp"),
         (module_ids["reverse"], "wabt", "The WebAssembly Binary Toolkit", "wabt-1.0.39\\bin", "file_folder", "","https://github.com/WebAssembly/wabt"),

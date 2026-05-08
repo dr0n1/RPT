@@ -1,7 +1,7 @@
 """
 # -*- coding: utf-8 -*-
 # @Author: dr0n1
-# @Version: v3.92.0
+# @Version: v3.95.0
 # @Link: https://www.dr0n.top/
 # @Last Update: 2025/11/29
 """
