@@ -181,7 +181,7 @@ def get_default_tools(module_ids):
         (module_ids["cms/oa利用工具"], "Exp-Tools", "OA综合漏洞利用工具", "Exp-Tools\\Exp-Tools-1.3.1-encrypted.jar", "java8_gui", "-javaagent:Exp-Tools-1.3.1-encrypted.jar", "https://github.com/cseroad/Exp-Tools"),
         (module_ids["cms/oa利用工具"], "TongdaOATool", "通达OA漏洞检测工具", "tongda\\TongdaTools.jar", "java11_gui", "", "https://github.com/xiaokp7/TongdaOATool"),
 
-        (module_ids["综合利用工具"], "mdut", "中文的数据库跨平台利用工具", "mdut\\Multiple.Database.Utilization.Tools-2.1.1-jar-with-dependencies.jar", "java11_gui", "", "https://github.com/SafeGroceryStore/MDUT"),
+        (module_ids["综合利用工具"], "mdut", "中文的数据库跨平台利用工具", "mdut\\Multiple.Database.Utilization.Tools-2.1.1-jar-with-dependencies.jar", "java8_gui", "", "https://github.com/SafeGroceryStore/MDUT"),
         (module_ids["综合利用工具"], "蓝队分析研判工具箱", "蓝队分析研判工具箱", "BlueTeamTools\\BlueTeam_ABC_123.jar", "java11_gui", "", "https://github.com/abc123info/BlueTeamTools"),
         (module_ids["综合利用工具"], "API-Explorer", "API接口管理工具", "API-Explorer\\API-Explorer.exe", "exe_gui", "", "https://github.com/mrknow001/API-Explorer"),
         (module_ids["综合利用工具"], "aliyun-accesskey-Tools", "阿里云accesskey利用工具", "aliyun\\Aliyun-.AK.Tools-V1.3.exe", "exe_gui", "", "https://github.com/mrknow001/aliyun-accesskey-Tools"),
@@ -210,7 +210,7 @@ def get_default_tools(module_ids):
         (module_ids["内网域工具"], "Rubeus", "Kerberos 攻击工具", "Rubeus-1.6.4", "file_folder", "", "https://github.com/GhostPack/Rubeus"),
         (module_ids["内网域工具"], "kerberoast", "Kerberos 攻击工具", "kerberoast", "file_folder", "", "https://github.com/nidem/kerberoast"),
         (module_ids["内网域工具"], "AdFind", "命令行 Active Directory 查询工具", "AdFind", "file_folder", "", "https://www.joeware.net/freetools/tools/adfind/"),
-        (module_ids["内网域工具"], "SpoolSample", "此概念验证工具可强制 Windows 主机通过 MS-RPRN RPC 接口向其他计算机进行身份验证。", "SpoolSample", "file_folder", "", "https://www.joeware.net/freetools/tools/adfind/"),
+        (module_ids["内网域工具"], "SpoolSample", "此概念验证工具可强制 Windows 主机通过 MS-RPRN RPC 接口向其他计算机进行身份验证。", "SpoolSample", "file_folder", "", "https://github.com/leechristensen/spoolsample"),
 
         (module_ids["隧道"], "Stowaway", "多级代理工具", "Stowaway", "file_folder", "", "https://github.com/ph4ntonn/Stowaway"),
         (module_ids["隧道"], "iox", "端口转发 & 内网代理工具", "iox", "file_folder", "", "https://github.com/EddieIvan01/iox"),
@@ -233,6 +233,7 @@ def get_default_tools(module_ids):
         (module_ids["提权"], "copy-fail", "CVE-2026-31431", "copy-fail", "file_folder", "", "https://github.com/theori-io/copy-fail-CVE-2026-31431"),
         (module_ids["提权"], "dirtyfrag", "Universal Linux LPE", "dirtyfrag", "file_folder", "","https://github.com/V4bel/dirtyfrag"),
         (module_ids["提权"], "CVE-2021-4034", "CVE-2021-4034", "CVE-2021-4034", "file_folder", "","https://github.com/theori-io/copy-fail-CVE-2026-31431"),
+        (module_ids["提权"], "Potato", "土豆家族", "Potato", "file_folder", "", "https://github.com/CCob/SweetPotato"),
 
         (module_ids["reverse"], "GDRE", "Godot RE Tools", "GDRE_tools-v2.4.0-windows\\gdre_tools.exe", "exe_gui", "","https://github.com/GDRETools/gdsdecomp"),
         (module_ids["reverse"], "wabt", "The WebAssembly Binary Toolkit", "wabt-1.0.39\\bin", "file_folder", "","https://github.com/WebAssembly/wabt"),
