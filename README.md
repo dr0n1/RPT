@@ -140,6 +140,13 @@ SHIFT+F5 恢复默认配置
 
 Rubeus，spoolsample为源码，需要自己编译
 
+
+# env
+
+python 来自 https://winpython.github.io/
+java 来自 https://bell-sw.com/
+
+
 # link
 
 兄弟项目：https://github.com/dr0n1/ctf_tools_auto_deploy  
