@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 # @Author: dr0n1
 # @Link: https://www.dr0n.top/
-# @Last Update: 2025/11/29
+# @Last Update: 2026/5/12
 """
 
 import os
 import sqlite3
+from collections.abc import Callable
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
@@ -35,9 +36,11 @@ from styles import (
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "tools.db")
+DialogButtons = tuple[QPushButton, QPushButton, QPushButton, QPushButton, QPushButton]
 
 
-def create_modules_table(cursor):
+def create_modules_table(cursor: sqlite3.Cursor) -> None:
+    """Create the modules table if it does not exist."""
     cursor.execute(
         '''
         CREATE TABLE IF NOT EXISTS modules (
@@ -51,7 +54,8 @@ def create_modules_table(cursor):
     )
 
 
-def create_tools_table(cursor):
+def create_tools_table(cursor: sqlite3.Cursor) -> None:
+    """Create the tools table if it does not exist."""
     cursor.execute(
         '''
         CREATE TABLE IF NOT EXISTS tools (
@@ -70,8 +74,8 @@ def create_tools_table(cursor):
     )
 
 
-def create_tables(cursor):
-    # 初始化 modules/tools/config 三张表，确保基础结构存在
+def create_tables(cursor: sqlite3.Cursor) -> None:
+    """Create all core database tables required by the application."""
     create_modules_table(cursor)
     create_tools_table(cursor)
     cursor.execute(
@@ -82,8 +86,8 @@ def create_tables(cursor):
     )
 
 
-def insert_default_data(cursor):
-    # 首次运行时填充默认的模块、工具条目以及配置开关
+def insert_default_data(cursor: sqlite3.Cursor) -> None:
+    """Insert bundled default modules, tools, and config values into an empty DB."""
     cursor.execute('SELECT COUNT(*) FROM modules')
     if cursor.fetchone()[0] > 0:
         return
@@ -131,8 +135,8 @@ def insert_default_data(cursor):
     )
 
 
-def get_default_tools(module_ids):
-    # 构造默认工具列表并补全启用标记，便于批量写入
+def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
+    """Build default tool rows with the enabled flag appended."""
     legacy_defaults = [
         (module_ids["WebShell管理"], "冰蝎3", "“冰蝎”动态二进制加密网站管理客户端", "Behinder_v3.0_Beta_11.t00ls\\Behinder.jar", "java11_gui", "", "https://github.com/rebeyond/Behinder"),
         (module_ids["WebShell管理"], "冰蝎4", "“冰蝎”动态二进制加密网站管理客户端", "Behinder_v4.1.t00ls\\Behinder.jar", "java11_gui", "", "https://github.com/rebeyond/Behinder"),
@@ -226,7 +230,7 @@ def get_default_tools(module_ids):
         (module_ids["CTF"], "arjun", "HTTP parameter discovery suite.", "arjun", "python3_module", "", "https://github.com/s0md3v/Arjun"),
         (module_ids["CTF"], "svnExploit", "SVN源代码泄露全版本Dump源码", "svnExploit\\SvnExploit.py", "python3_cli", "", "https://github.com/admintony/svnExploit"),
         (module_ids["CTF"], "ApereoCas", "ApereoCas反序列化回显与检测", "ysoserial-mangguogan-master\\ysoserial-managguogan-0.0.1-SNAPSHOT-all.jar", "java11_cui", "","https://github.com/JulianWu520/ysoserial-mangguogan"),
-        (module_ids["CTF"], "Jawd", "AWD jar修复", "Jawd\\Jawd-1.0-fat.jar", "java8_gui", "", "https://github.com/AlphabugX/Jawd"),
+        (module_ids["CTF"], "Jawd", "AWD jar修复", "Jawd\\Jawd-1.0-fat.jar", "java11_gui", "", "https://github.com/AlphabugX/Jawd"),
         (module_ids["CTF"], "souse", "一个将 Python 源码全自动化转换为 Opcode (pickle) 的工具", "souse", "python3_module", "", "https://github.com/Macr0phag3/souse"),
 
         (module_ids["提权"], "linux-exploit-suggester", "Linux privilege escalation auditing tool", "linux-exploit-suggester", "file_folder", "", "https://github.com/The-Z-Labs/linux-exploit-suggester/"),
@@ -269,8 +273,8 @@ def get_default_tools(module_ids):
     return processed_defaults
 
 
-def create_db():
-    # 创建数据库文件并写入默认数据
+def create_db() -> None:
+    """Create the database file and insert default data when empty."""
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         create_tables(cursor)
@@ -278,8 +282,8 @@ def create_db():
         conn.commit()
 
 
-def upgrade_db():
-    # 升级数据库结构并在空库时回填默认数据
+def upgrade_db() -> None:
+    """Ensure schema compatibility and seed defaults for an empty database."""
     with sqlite3.connect(DB_PATH) as conn:
         cursor = conn.cursor()
         create_tables(cursor)
@@ -292,7 +296,15 @@ def upgrade_db():
         conn.commit()
 
 
-def _exec_message_box(parent, title, text, icon, buttons, default_button):
+def _exec_message_box(
+    parent: QWidget | None,
+    title: str,
+    text: str,
+    icon: QMessageBox.Icon,
+    buttons: QMessageBox.StandardButton,
+    default_button: QMessageBox.StandardButton,
+) -> QMessageBox.StandardButton:
+    """Create a consistently styled message box and execute it."""
     box = QMessageBox(parent)
     box.setWindowTitle(title)
     box.setText(text)
@@ -303,8 +315,13 @@ def _exec_message_box(parent, title, text, icon, buttons, default_button):
     return box.exec()
 
 
-def _restore_database_defaults(dialog, parent, *reload_callbacks, default_button=QMessageBox.No):
-    # 用户确认后清空三张表并恢复默认数据，同时刷新界面展示
+def _restore_database_defaults(
+    dialog: QDialog,
+    parent: QWidget | None,
+    *reload_callbacks: Callable[[], None],
+    default_button: QMessageBox.StandardButton = QMessageBox.No,
+) -> bool:
+    """Restore default database content after explicit confirmation."""
     confirm = _exec_message_box(
         dialog,
         "确认恢复",
@@ -353,14 +370,17 @@ def _restore_database_defaults(dialog, parent, *reload_callbacks, default_button
         return False
 
 
-def restore_database_defaults(dialog, *reload_callbacks):
-    # 用于全局快捷键触发的恢复默认（不依赖外层窗口回调）
+def restore_database_defaults(
+    dialog: QDialog,
+    *reload_callbacks: Callable[[], None],
+) -> bool:
+    """Restore defaults from a global entry point."""
     callbacks = [cb for cb in reload_callbacks if callable(cb)]
     return _restore_database_defaults(dialog, None, *callbacks, default_button=QMessageBox.Yes)
 
 
-def show_database_dialog(parent):
-    # 打开数据库管理对话框，加载模块/工具表格并绑定交互事件
+def show_database_dialog(parent: QWidget | None) -> bool:
+    """Open the database management dialog and bind table interactions."""
     dialog = QDialog(parent)
     dialog.setWindowTitle("数据库管理")
     dialog.resize(1200, 800)
@@ -393,14 +413,14 @@ def show_database_dialog(parent):
     )
     _load_tool_data(tool_table)
 
-    def refresh_dialog_tables():
+    def refresh_dialog_tables() -> None:
         _load_module_data(module_table)
         _load_tool_data(tool_table)
 
     if parent is not None:
         parent._db_dialog_refresh = refresh_dialog_tables
 
-    def closeEvent(event):
+    def closeEvent(event: object) -> None:
         if hasattr(parent, 'load_modules'):
             parent.load_modules()
         event.accept()
@@ -414,25 +434,38 @@ def show_database_dialog(parent):
     return result == QDialog.Accepted
 
 
-def _create_tab_widget(parent):
-    # 创建带主题样式的 Tab 容器
+def _create_tab_widget(parent: QWidget | None) -> QTabWidget:
+    """Create the styled tab container for database management."""
     tabs = QTabWidget(parent)
     apply_stylesheet(tabs, TAB_WIDGET_STYLE)
     return tabs
 
 
-def _create_module_tab(tabs):
-    # 组装模块管理页的表格与按钮布局
-    module_tab = QWidget()
-    module_layout = QVBoxLayout(module_tab)
-    module_layout.setSpacing(12)
-    module_layout.setContentsMargins(16, 16, 16, 16)
+def _create_module_tab(tabs: QTabWidget) -> tuple[QWidget, QTableWidget, DialogButtons]:
+    """Create the module management tab."""
+    return _create_management_tab(tabs, "📁 模块管理")
 
-    tableWidget = _create_table_widget()
-    module_layout.addWidget(tableWidget)
 
-    btns_layout = QHBoxLayout()
-    btns_layout.setSpacing(12)
+def _create_tool_tab(tabs: QTabWidget) -> tuple[QWidget, QTableWidget, DialogButtons]:
+    """Create the tool management tab."""
+    return _create_management_tab(tabs, "🔧 工具管理")
+
+
+def _create_management_tab(
+    tabs: QTabWidget,
+    title: str,
+) -> tuple[QWidget, QTableWidget, DialogButtons]:
+    """Create a table tab with the standard database management buttons."""
+    tab = QWidget()
+    layout = QVBoxLayout(tab)
+    layout.setSpacing(12)
+    layout.setContentsMargins(16, 16, 16, 16)
+
+    table = _create_table_widget()
+    layout.addWidget(table)
+
+    button_layout = QHBoxLayout()
+    button_layout.setSpacing(12)
     btn_add_row = QPushButton("➕ 新增一行")
     btn_delete_row = QPushButton("🗑️ 删除选中")
     btn_restore_default = QPushButton("🔄 恢复默认")
@@ -442,109 +475,104 @@ def _create_module_tab(tabs):
     apply_stylesheets([btn_add_row, btn_delete_row, btn_refresh, btn_close], BUTTON_STYLE)
     apply_stylesheet(btn_restore_default, RESTORE_BUTTON_STYLE)
 
-    btns_layout.addWidget(btn_add_row)
-    btns_layout.addWidget(btn_delete_row)
-    btns_layout.addWidget(btn_restore_default)
-    btns_layout.addWidget(btn_refresh)
-    btns_layout.addStretch()
-    btns_layout.addWidget(btn_close)
-    module_layout.addLayout(btns_layout)
+    button_layout.addWidget(btn_add_row)
+    button_layout.addWidget(btn_delete_row)
+    button_layout.addWidget(btn_restore_default)
+    button_layout.addWidget(btn_refresh)
+    button_layout.addStretch()
+    button_layout.addWidget(btn_close)
+    layout.addLayout(button_layout)
 
-    tabs.addTab(module_tab, "📁 模块管理")
-    return module_tab, tableWidget, (btn_add_row, btn_delete_row, btn_restore_default, btn_refresh, btn_close)
-
-
-def _create_tool_tab(tabs):
-    # 组装工具管理页的表格与按钮布局
-    tool_tab = QWidget()
-    tool_layout = QVBoxLayout(tool_tab)
-    tool_layout.setSpacing(12)
-    tool_layout.setContentsMargins(16, 16, 16, 16)
-
-    tool_table = _create_table_widget()
-    tool_layout.addWidget(tool_table)
-
-    tool_btns_layout = QHBoxLayout()
-    tool_btns_layout.setSpacing(12)
-    btn_add_row = QPushButton("➕ 新增一行")
-    btn_delete_row = QPushButton("🗑️ 删除选中")
-    btn_restore_default = QPushButton("🔄 恢复默认")
-    btn_refresh = QPushButton("🔄 刷新")
-    btn_close = QPushButton("❌ 关闭")
-
-    apply_stylesheets([btn_add_row, btn_delete_row, btn_refresh, btn_close], BUTTON_STYLE)
-    apply_stylesheet(btn_restore_default, RESTORE_BUTTON_STYLE)
-
-    tool_btns_layout.addWidget(btn_add_row)
-    tool_btns_layout.addWidget(btn_delete_row)
-    tool_btns_layout.addWidget(btn_restore_default)
-    tool_btns_layout.addWidget(btn_refresh)
-    tool_btns_layout.addStretch()
-    tool_btns_layout.addWidget(btn_close)
-    tool_layout.addLayout(tool_btns_layout)
-
-    tabs.addTab(tool_tab, "🔧 工具管理")
-    return tool_tab, tool_table, (btn_add_row, btn_delete_row, btn_restore_default, btn_refresh, btn_close)
+    buttons = (
+        btn_add_row,
+        btn_delete_row,
+        btn_restore_default,
+        btn_refresh,
+        btn_close,
+    )
+    tabs.addTab(tab, title)
+    return tab, table, buttons
 
 
-def _create_table_widget():
-    # 统一创建带交替行色与主题样式的表格控件
-    tableWidget = QTableWidget()
-    tableWidget.setAlternatingRowColors(True)
-    tableWidget.setFocusPolicy(Qt.NoFocus)
-    tableWidget.setEditTriggers(QTableWidget.DoubleClicked | QTableWidget.EditKeyPressed)
-    tableWidget.verticalHeader().setDefaultSectionSize(50)
-    tableWidget.verticalHeader().setMinimumSectionSize(45)
+def _create_table_widget() -> QTableWidget:
+    """Create a styled editable table with common row settings."""
+    table_widget = QTableWidget()
+    table_widget.setAlternatingRowColors(True)
+    table_widget.setFocusPolicy(Qt.NoFocus)
+    table_widget.setEditTriggers(QTableWidget.DoubleClicked | QTableWidget.EditKeyPressed)
+    table_widget.verticalHeader().setDefaultSectionSize(50)
+    table_widget.verticalHeader().setMinimumSectionSize(45)
 
-    apply_stylesheet(tableWidget, TABLE_WIDGET_STYLE)
-    return tableWidget
+    apply_stylesheet(table_widget, TABLE_WIDGET_STYLE)
+    return table_widget
 
 
-def _load_module_data(tableWidget):
-    # 从 modules 表加载数据填充表格，保持排序与只读 ID
-    tableWidget.blockSignals(True)
-    tableWidget.setSortingEnabled(False)
+def _table_item(text: object, editable: bool = True, tooltip: bool = False) -> QTableWidgetItem:
+    """Create a table item with optional tooltip and editability."""
+    value = "" if text is None else str(text)
+    item = QTableWidgetItem(value)
+    if tooltip:
+        item.setToolTip(value)
+    if not editable:
+        item.setFlags(item.flags() & ~Qt.ItemIsEditable)
+    return item
+
+
+def _set_table_item(
+    table: QTableWidget,
+    row: int,
+    column: int,
+    text: object,
+    *,
+    editable: bool = True,
+    tooltip: bool = False,
+) -> None:
+    """Set a normalized table item in one cell."""
+    table.setItem(row, column, _table_item(text, editable, tooltip))
+
+
+def _load_module_data(table_widget: QTableWidget) -> None:
+    """Load module rows from the database into the module table."""
+    table_widget.blockSignals(True)
+    table_widget.setSortingEnabled(False)
     try:
         with sqlite3.connect(DB_PATH) as conn:
             c = conn.cursor()
             c.execute('SELECT id, name, directory, description, sort_order FROM modules ORDER BY sort_order, id')
             modules = c.fetchall()
 
-        tableWidget.clearContents()
-        tableWidget.setRowCount(len(modules))
-        tableWidget.setColumnCount(5)
-        tableWidget.setHorizontalHeaderLabels(['模块名称', '目录', '描述', '排序', 'ID'])
+        table_widget.clearContents()
+        table_widget.setRowCount(len(modules))
+        table_widget.setColumnCount(5)
+        table_widget.setHorizontalHeaderLabels(['模块名称', '目录', '描述', '排序', 'ID'])
 
         for row, (module_id, name, directory, description, sort_order) in enumerate(modules):
-            name_item = QTableWidgetItem(name)
-            name_item.setToolTip(name)
-            tableWidget.setItem(row, 0, name_item)
-            dir_item = QTableWidgetItem(directory)
-            dir_item.setToolTip(directory)
-            tableWidget.setItem(row, 1, dir_item)
-            desc_text = description or ''
-            desc_item = QTableWidgetItem(desc_text)
-            desc_item.setToolTip(desc_text)
-            tableWidget.setItem(row, 2, desc_item)
-            tableWidget.setItem(row, 3, QTableWidgetItem(str(sort_order)))
-            id_item = QTableWidgetItem(str(module_id))
-            id_item.setFlags(id_item.flags() & ~Qt.ItemIsEditable)
-            tableWidget.setItem(row, 4, id_item)
+            _set_table_item(table_widget, row, 0, name, tooltip=True)
+            _set_table_item(table_widget, row, 1, directory, tooltip=True)
+            _set_table_item(table_widget, row, 2, description, tooltip=True)
+            _set_table_item(table_widget, row, 3, sort_order)
+            _set_table_item(table_widget, row, 4, module_id, editable=False)
     finally:
-        tableWidget.blockSignals(False)
-        tableWidget.setSortingEnabled(True)
+        table_widget.blockSignals(False)
+        table_widget.setSortingEnabled(True)
 
-    tableWidget.setColumnHidden(4, True)
-    header = tableWidget.horizontalHeader()
+    table_widget.setColumnHidden(4, True)
+    header = table_widget.horizontalHeader()
     header.setSectionResizeMode(QHeaderView.Stretch)
 
 
-def _bind_module_events(tableWidget, buttons, dialog, parent, tool_reload=None):
-    # 绑定模块表格的增删改事件并自动持久化到数据库
+def _bind_module_events(
+    table_widget: QTableWidget,
+    buttons: DialogButtons,
+    dialog: QDialog,
+    parent: QWidget | None,
+    tool_reload: Callable[[], None] | None = None,
+) -> None:
+    """Bind module table create/update/delete events."""
     btn_add_row, btn_delete_row, btn_restore_default, btn_refresh, btn_close = buttons
     btn_close.clicked.connect(dialog.accept)
 
-    def auto_save():
+    def auto_save() -> None:
         try:
             with sqlite3.connect(DB_PATH) as conn:
                 c = conn.cursor()
@@ -558,12 +586,12 @@ def _bind_module_events(tableWidget, buttons, dialog, parent, tool_reload=None):
                 desired_updates = {}
                 new_entries = []
 
-                for row in range(tableWidget.rowCount()):
-                    name_item = tableWidget.item(row, 0)
-                    directory_item = tableWidget.item(row, 1)
-                    description_item = tableWidget.item(row, 2)
-                    order_item = tableWidget.item(row, 3)
-                    id_item = tableWidget.item(row, 4)
+                for row in range(table_widget.rowCount()):
+                    name_item = table_widget.item(row, 0)
+                    directory_item = table_widget.item(row, 1)
+                    description_item = table_widget.item(row, 2)
+                    order_item = table_widget.item(row, 3)
+                    id_item = table_widget.item(row, 4)
 
                     name = name_item.text().strip() if name_item and name_item.text() else ''
                     directory = directory_item.text().strip() if directory_item and directory_item.text() else ''
@@ -601,9 +629,9 @@ def _bind_module_events(tableWidget, buttons, dialog, parent, tool_reload=None):
                             (name, directory, description, sort_order)
                         )
                         new_id = c.lastrowid
-                        tableWidget.blockSignals(True)
-                        tableWidget.setItem(row_index, 4, QTableWidgetItem(str(new_id)))
-                        tableWidget.blockSignals(False)
+                        table_widget.blockSignals(True)
+                        table_widget.setItem(row_index, 4, QTableWidgetItem(str(new_id)))
+                        table_widget.blockSignals(False)
 
                 conn.commit()
 
@@ -611,55 +639,62 @@ def _bind_module_events(tableWidget, buttons, dialog, parent, tool_reload=None):
                     parent.load_modules()
                 if tool_reload:
                     tool_reload()
-        except Exception as e:
-            print(f"自动保存失败: {e}")
+        except Exception as exc:
+            print(f"自动保存失败: {exc}")
 
-    def add_row():
-        new_row = tableWidget.rowCount()
-        tableWidget.insertRow(new_row)
-        tableWidget.blockSignals(True)
-        tableWidget.setItem(new_row, 3, QTableWidgetItem(str(new_row)))
-        tableWidget.setItem(new_row, 4, QTableWidgetItem(''))
-        tableWidget.blockSignals(False)
-        tableWidget.setCurrentCell(new_row, 0)
-        tableWidget.edit(tableWidget.currentIndex())
+    def add_row() -> None:
+        new_row = table_widget.rowCount()
+        table_widget.insertRow(new_row)
+        table_widget.blockSignals(True)
+        table_widget.setItem(new_row, 3, QTableWidgetItem(str(new_row)))
+        table_widget.setItem(new_row, 4, QTableWidgetItem(''))
+        table_widget.blockSignals(False)
+        table_widget.setCurrentCell(new_row, 0)
+        table_widget.edit(table_widget.currentIndex())
 
-    def delete_selected():
-        rows = sorted({i.row() for i in tableWidget.selectedIndexes()}, reverse=True)
+    def delete_selected() -> None:
+        rows = sorted({i.row() for i in table_widget.selectedIndexes()}, reverse=True)
         if rows:
             for r in rows:
-                tableWidget.removeRow(r)
+                table_widget.removeRow(r)
             auto_save()
 
-    def restore_default():
-        callbacks = [lambda: _load_module_data(tableWidget)]
+    def restore_default() -> None:
+        callbacks = [lambda: _load_module_data(table_widget)]
         if tool_reload:
             callbacks.append(tool_reload)
         _restore_database_defaults(dialog, parent, *callbacks)
 
-    def refresh_modules():
-        _load_module_data(tableWidget)
+    def refresh_modules() -> None:
+        _load_module_data(table_widget)
 
-    def on_item_changed():
+    def on_item_changed() -> None:
         auto_save()
 
     btn_add_row.clicked.connect(add_row)
     btn_delete_row.clicked.connect(delete_selected)
     btn_restore_default.clicked.connect(restore_default)
     btn_refresh.clicked.connect(refresh_modules)
-    tableWidget.itemChanged.connect(on_item_changed)
+    table_widget.itemChanged.connect(on_item_changed)
 
 
-def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
-    # 绑定工具表格的增删查改逻辑并与模块列表联动
+def _bind_tool_events(
+    tool_table: QTableWidget,
+    buttons: DialogButtons,
+    dialog: QDialog,
+    parent: QWidget | None,
+    module_reload: Callable[[], None] | None = None,
+) -> None:
+    """Bind tool table create/update/delete events."""
     btn_add_row, btn_delete_row, btn_restore_default, btn_refresh, btn_close = buttons
     btn_close.clicked.connect(dialog.accept)
+    sort_enabled_before_new_row = True
 
-    def _get_text(row, column):
+    def _get_text(row: int, column: int) -> str:
         item = tool_table.item(row, column)
         return item.text().strip() if item and item.text() else ''
 
-    def _select_row_by_id(tool_id):
+    def _select_row_by_id(tool_id: int | None) -> None:
         if not tool_id:
             return
         for row in range(tool_table.rowCount()):
@@ -669,7 +704,10 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
                 tool_table.scrollToItem(id_item)
                 break
 
-    def add_row():
+    def add_row() -> None:
+        nonlocal sort_enabled_before_new_row
+        sort_enabled_before_new_row = tool_table.isSortingEnabled()
+        tool_table.setSortingEnabled(False)
         new_row = tool_table.rowCount()
         tool_table.insertRow(new_row)
         tool_table.blockSignals(True)
@@ -688,7 +726,7 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
         tool_table.setCurrentCell(new_row, 0)
         tool_table.edit(tool_table.currentIndex())
 
-    def delete_selected():
+    def delete_selected() -> None:
         rows = sorted({i.row() for i in tool_table.selectedIndexes()}, reverse=True)
         if rows:
             tool_ids = []
@@ -707,16 +745,17 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
             if module_reload:
                 module_reload()
 
-    def restore_default():
+    def restore_default() -> None:
         callbacks = [lambda: _load_tool_data(tool_table)]
         if module_reload:
             callbacks.append(module_reload)
         _restore_database_defaults(dialog, parent, *callbacks)
 
-    def refresh_tools():
+    def refresh_tools() -> None:
         _load_tool_data(tool_table)
 
-    def save_row(row):
+    def save_row(row: int) -> int | None:
+        nonlocal sort_enabled_before_new_row
         name = _get_text(row, 0)
         entry_path = _get_text(row, 2)
         runtime_key = _get_text(row, 3)
@@ -747,7 +786,6 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
                     QMessageBox.Ok,
                     QMessageBox.Ok,
                 )
-                _load_tool_data(tool_table)
                 return None
 
             module_id = module_row[0]
@@ -778,13 +816,20 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
                 conn.commit()
                 saved_id = c.lastrowid
 
-        _load_tool_data(tool_table)
+        if not tool_id and saved_id:
+            tool_table.blockSignals(True)
+            id_item = QTableWidgetItem(str(saved_id))
+            id_item.setFlags(id_item.flags() & ~Qt.ItemIsEditable)
+            tool_table.setItem(row, 8, id_item)
+            tool_table.blockSignals(False)
+            tool_table.setSortingEnabled(sort_enabled_before_new_row)
+
         _select_row_by_id(saved_id)
         if hasattr(parent, 'load_modules'):
             parent.load_modules()
         return saved_id
 
-    def on_item_changed(item):
+    def on_item_changed(item: QTableWidgetItem) -> None:
         if item.column() == 8:
             return
         save_row(item.row())
@@ -796,8 +841,8 @@ def _bind_tool_events(tool_table, buttons, dialog, parent, module_reload=None):
     tool_table.itemChanged.connect(on_item_changed)
 
 
-def _load_tool_data(tool_table):
-    # 从 tools 与 modules 联表查询工具数据并填充表格
+def _load_tool_data(tool_table: QTableWidget) -> None:
+    """Load joined tool/module rows into the tool table."""
     tool_table.blockSignals(True)
     tool_table.setSortingEnabled(False)
 
@@ -842,45 +887,15 @@ def _load_tool_data(tool_table):
             is_enabled,
             module_name
         ) in enumerate(tools):
-            name_text = tool_name or ''
-            name_item = QTableWidgetItem(name_text)
-            name_item.setToolTip(name_text)
-            tool_table.setItem(row, 0, name_item)
-
-            desc_text = description or ''
-            desc_item = QTableWidgetItem(desc_text)
-            desc_item.setToolTip(desc_text)
-            tool_table.setItem(row, 1, desc_item)
-
-            entry_text = entry_path or ''
-            entry_item = QTableWidgetItem(entry_text)
-            entry_item.setToolTip(entry_text)
-            tool_table.setItem(row, 2, entry_item)
-
-            runtime_item = QTableWidgetItem(runtime_key or '')
-            tool_table.setItem(row, 3, runtime_item)
-
-            args_text = arguments or ''
-            args_item = QTableWidgetItem(args_text)
-            args_item.setToolTip(args_text)
-            tool_table.setItem(row, 4, args_item)
-
-            download_text = download_url or ''
-            download_item = QTableWidgetItem(download_text)
-            download_item.setToolTip(download_text)
-            tool_table.setItem(row, 5, download_item)
-
-            module_text = module_name or ''
-            module_item = QTableWidgetItem(module_text)
-            module_item.setToolTip(module_text)
-            tool_table.setItem(row, 6, module_item)
-
-            enabled_item = QTableWidgetItem("1" if is_enabled else "0")
-            tool_table.setItem(row, 7, enabled_item)
-
-            id_item = QTableWidgetItem(str(tool_id))
-            id_item.setFlags(id_item.flags() & ~Qt.ItemIsEditable)
-            tool_table.setItem(row, 8, id_item)
+            _set_table_item(tool_table, row, 0, tool_name, tooltip=True)
+            _set_table_item(tool_table, row, 1, description, tooltip=True)
+            _set_table_item(tool_table, row, 2, entry_path, tooltip=True)
+            _set_table_item(tool_table, row, 3, runtime_key)
+            _set_table_item(tool_table, row, 4, arguments, tooltip=True)
+            _set_table_item(tool_table, row, 5, download_url, tooltip=True)
+            _set_table_item(tool_table, row, 6, module_name, tooltip=True)
+            _set_table_item(tool_table, row, 7, "1" if is_enabled else "0")
+            _set_table_item(tool_table, row, 8, tool_id, editable=False)
 
         tool_table.setColumnHidden(8, True)
         header = tool_table.horizontalHeader()

@@ -1,10 +1,10 @@
-DIALOG_STYLE = """
-    QDialog {
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-            stop:0 #f8fafc, stop:1 #e2e8f0);
-        border-radius: 16px;
-    }
-"""
+"""About and search dialog styles."""
+
+from .button_styles import DIALOG_BUTTON_PRIMARY_STYLE, DIALOG_BUTTON_SECONDARY_STYLE
+from .style_builders import dialog_background_style
+
+
+DIALOG_STYLE = dialog_background_style(border_radius=16)
 
 DIALOG_LABEL_TITLE_STYLE = """
     QLabel {
@@ -63,66 +63,7 @@ DIALOG_LABEL_DESC_TEXT_STYLE = """
     }
 """
 
-DIALOG_BUTTON_PRIMARY_STYLE = """
-    QPushButton {
-        padding: 12px 20px;
-        font-size: 13px;
-        font-weight: 500;
-        border: 1px solid #3b82f6;
-        border-radius: 8px;
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-            stop:0 #3b82f6, stop:1 #2563eb);
-        color: white;
-        min-width: 100px;
-    }
-    QPushButton:hover {
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-            stop:0 #2563eb, stop:1 #1d4ed8);
-        border: 1px solid #1d4ed8;
-    }
-    QPushButton:pressed {
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-            stop:0 #1d4ed8, stop:1 #1e40af);
-    }
-    QPushButton:focus {
-        outline: none;
-    }
-"""
-
-DIALOG_BUTTON_SECONDARY_STYLE = """
-    QPushButton {
-        padding: 12px 20px;
-        font-size: 13px;
-        font-weight: 500;
-        border: 1px solid #d1d5db;
-        border-radius: 8px;
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-            stop:0 #ffffff, stop:1 #f8fafc);
-        color: #374151;
-        min-width: 100px;
-    }
-    QPushButton:hover {
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-            stop:0 #f0f9ff, stop:1 #e0f2fe);
-        border: 1px solid #3b82f6;
-        color: #1e40af;
-    }
-    QPushButton:pressed {
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-            stop:0 #e0f2fe, stop:1 #bae6fd);
-    }
-    QPushButton:focus {
-        outline: none;
-    }
-"""
-
-SEARCH_DIALOG_STYLE = """
-    QDialog {
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1, 
-            stop:0 #f8fafc, stop:1 #e2e8f0);
-        border-radius: 12px;
-    }
-"""
+SEARCH_DIALOG_STYLE = dialog_background_style(border_radius=12)
 
 SEARCH_INPUT_STYLE = """
     QLineEdit {

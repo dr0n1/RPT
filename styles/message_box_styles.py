@@ -30,5 +30,6 @@ MESSAGE_BOX_STYLE = """
 """
 
 
-def style_message_box(box):
+def style_message_box(box: object) -> None:
+    """Apply the shared QMessageBox stylesheet."""
     box.setStyleSheet(MESSAGE_BOX_STYLE)

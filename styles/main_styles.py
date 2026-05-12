@@ -1,3 +1,8 @@
+"""Main window, navigation, and launcher button styles."""
+
+from .button_styles import TOOL_BUTTON_STYLE
+
+
 MAIN_WINDOW_STYLE = """
     QMainWindow {
         background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
@@ -150,36 +155,6 @@ LIST_CONTAINER_STYLE = """
     }
 """
 
-TOOL_BUTTON_STYLE = """
-    QPushButton {
-        padding: 12px 20px;
-        margin: 4px;
-        border: 1px solid #bfdbfe;
-        border-radius: 12px;
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-            stop:0 #f8fbff, stop:1 #e0f2ff);
-        color: #1f2937;
-        font-weight: 600;
-        font-size: 13px;
-    }
-    QPushButton:hover {
-        background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-            stop:0 #eff6ff, stop:1 #dbeafe);
-        border: 1px solid #2563eb;
-        color: #1d4ed8;
-    }
-    QPushButton:pressed {
-        background: #2563eb;
-        color: #f8fafc;
-        border: 1px solid #1d4ed8;
-    }
-    QPushButton:disabled {
-        background: #e2e8f0;
-        color: #94a3b8;
-        border: 1px solid #cbd5e1;
-    }
-"""
-
 CUSTOM_TOOLTIP_STYLE = """
     QFrame#RoundedToolTip {
         background: transparent;
@@ -190,5 +165,18 @@ CUSTOM_TOOLTIP_STYLE = """
         padding: 6px 10px;
         font-size: 12px;
         background: transparent;
+    }
+"""
+
+STATUS_BAR_STYLE = """
+    QStatusBar {
+        background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+            stop:0 #ffffff, stop:1 #f8fafc);
+        border-top: 1px solid #e2e8f0;
+        padding: 4px;
+    }
+    QStatusBar::item {
+        border: none;
+        padding: 4px 8px;
     }
 """

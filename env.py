@@ -2,13 +2,14 @@
 # -*- coding: utf-8 -*-
 # @Author: dr0n1
 # @Link: https://www.dr0n.top/
-# @Last Update: 2025/11/29
+# @Last Update: 2026/5/12
 """
 
 import os
 import shutil
 import sqlite3
 import subprocess
+from collections.abc import Callable, Sequence
 
 from PySide6.QtCore import QThread, Signal
 from PySide6.QtWidgets import (
@@ -37,6 +38,7 @@ from styles import (
 from db import DB_PATH
 
 UNKNOWN_VERSION_MSG = "未知版本"
+UNRECOGNIZED_VERSION_MSG = "未识别版本"
 TIMEOUT_MSG = "检测超时"
 NOT_DETECTED_MSG = "未检测到版本"
 BUNDLED_RUNTIME_MSG = "使用内置环境变量"
@@ -47,22 +49,25 @@ SYSTEM_JAVA_MISSING_MSG = "未检测到系统 Java，请手动选择可执行文
 
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+VersionArg = str | Sequence[str]
 
 
-def _normalize_path(*parts):
-    # 规范化并统一分隔符，生成相对项目根路径的绝对路径
+def _normalize_path(*parts: str) -> str:
+    """Return an absolute project-local path with POSIX-style separators."""
     return os.path.abspath(os.path.join(BASE_DIR, *parts)).replace("\\", "/")
 
 
 class Env:
+    """Runtime executable paths used by tool launch commands."""
 
-    def __init__(self):
-        self.python3_path = None
-        self.java8_path = None
-        self.java11_path = None
+    def __init__(self) -> None:
+        self.python3_path: str | None = None
+        self.java8_path: str | None = None
+        self.java11_path: str | None = None
+        self.java16_path: str | None = None
 
-    def load_env(self):
-        # 默认将运行时路径指向打包在项目下的内置 Python/Java
+    def load_env(self) -> None:
+        """Load bundled runtime paths relative to the project root."""
         self.python3_path = _normalize_path("ENV", "python3.12.10", "python.exe")
         self.java8_path = _normalize_path("ENV", "Java_8", "bin", "java")
         self.java11_path = _normalize_path("ENV", "Java_11", "bin", "java")
@@ -72,8 +77,110 @@ env = Env()
 env.load_env()
 
 
-def show_env_dialog(parent, env_obj=None):
-    # 弹出环境配置对话框，允许选择内置或系统的 Python/Java 并写回配置
+def _get_config_value(key: str, default: str = "") -> str:
+    """Read one runtime config value, creating the table when needed."""
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS config "
+            "(config_key TEXT PRIMARY KEY, config_value TEXT)"
+        )
+        cursor.execute("SELECT config_value FROM config WHERE config_key = ?", (key,))
+        row = cursor.fetchone()
+    return row[0] if row else default
+
+
+def _save_config_values(values: dict[str, str]) -> None:
+    """Persist runtime config values with upsert semantics."""
+    with sqlite3.connect(DB_PATH) as conn:
+        cursor = conn.cursor()
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS config "
+            "(config_key TEXT PRIMARY KEY, config_value TEXT)"
+        )
+        cursor.executemany(
+            "INSERT INTO config (config_key, config_value) VALUES (?, ?) "
+            "ON CONFLICT(config_key) DO UPDATE "
+            "SET config_value = excluded.config_value",
+            values.items(),
+        )
+        conn.commit()
+
+
+def _run_version(executable: str, arguments: VersionArg) -> str:
+    """Run an executable version command and return the first output line."""
+    candidates = arguments if isinstance(arguments, (list, tuple)) else (arguments,)
+    last_message = UNKNOWN_VERSION_MSG
+
+    for candidate in candidates:
+        try:
+            result = subprocess.run(
+                [executable, candidate],
+                capture_output=True,
+                text=True,
+                timeout=5,
+                creationflags=subprocess.CREATE_NO_WINDOW,
+            )
+            output = (result.stdout or result.stderr).strip()
+            if output:
+                return output.splitlines()[0]
+            last_message = UNKNOWN_VERSION_MSG
+        except subprocess.TimeoutExpired:
+            return TIMEOUT_MSG
+        except Exception as exc:
+            last_message = str(exc) or UNKNOWN_VERSION_MSG
+
+    return last_message
+
+
+class VersionWorker(QThread):
+    """Background worker for runtime version detection."""
+
+    result = Signal(str)
+
+    def __init__(self, executable: str, arguments: VersionArg) -> None:
+        super().__init__()
+        self.executable = executable
+        self.arguments = arguments
+
+    def run(self) -> None:
+        version = _run_version(self.executable, self.arguments) or ""
+        self.result.emit(version)
+
+
+def _track_worker(dialog: QDialog, worker: VersionWorker) -> None:
+    """Keep a QThread alive until it emits finished."""
+    worker.setParent(dialog)
+    dialog._workers.append(worker)
+
+    def _cleanup() -> None:
+        try:
+            dialog._workers.remove(worker)
+        except ValueError:
+            pass
+        worker.deleteLater()
+
+    worker.finished.connect(_cleanup)
+
+
+def _version_message(version: str) -> str:
+    """Map empty or failed version output to a display message."""
+    if version and version not in (UNKNOWN_VERSION_MSG, TIMEOUT_MSG):
+        return version
+    return version or NOT_DETECTED_MSG
+
+
+def _find_first_command(commands: Sequence[str]) -> str | None:
+    """Return the first command found on PATH."""
+    for command in commands:
+        candidate = shutil.which(command)
+        if candidate:
+            return candidate
+    return None
+
+
+def show_env_dialog(parent: object, env_obj: Env | None = None) -> bool:
+    """Show the runtime configuration dialog and persist accepted changes."""
     env_obj = env_obj or env
 
     dlg = QDialog(parent)
@@ -152,75 +259,51 @@ def show_env_dialog(parent, env_obj=None):
     layout.addLayout(btn_layout)
     btn_cancel.clicked.connect(dlg.reject)
 
-    def get_cfg(key, default=None):
-        with sqlite3.connect(DB_PATH) as conn:
-            c = conn.cursor()
-            c.execute('CREATE TABLE IF NOT EXISTS config (config_key TEXT PRIMARY KEY, config_value TEXT)')
-            c.execute('SELECT config_value FROM config WHERE config_key = ?', (key,))
-            row = c.fetchone()
-        return row[0] if row else default
-
-    use_py_builtin = (get_cfg('use_builtin_python', 'true') == 'true')
-    use_java_builtin = (get_cfg('use_builtin_java', 'true') == 'true')
-    py_custom_path = get_cfg('python_custom_path', '')
-    java_custom_path = get_cfg('java_custom_path', '')
+    use_py_builtin = _get_config_value("use_builtin_python", "true") == "true"
+    use_java_builtin = _get_config_value("use_builtin_java", "true") == "true"
+    py_custom_path = _get_config_value("python_custom_path", "")
+    java_custom_path = _get_config_value("java_custom_path", "")
 
     py_status_text = ''
     java_status_text = ''
 
-    def update_status():
+    def update_status() -> None:
         status_label.setText(f"{py_status_text} | {java_status_text}")
 
-    def run_version(exe, arg):
-        # 以子进程调用给定可执行文件并返回首行版本输出，超时或异常时给出提示
-        candidates = arg if isinstance(arg, (list, tuple)) else (arg,)
-        last_message = UNKNOWN_VERSION_MSG
+    def set_python_status(value: str) -> None:
+        nonlocal py_status_text
+        py_status_text = value
 
-        for candidate in candidates:
-            try:
-                res = subprocess.run(
-                    [exe, candidate],
-                    capture_output=True,
-                    text=True,
-                    timeout=5,
-                    creationflags=subprocess.CREATE_NO_WINDOW
-                )
-                text = (res.stdout or res.stderr).strip()
-                if text:
-                    return text.splitlines()[0]
-                last_message = UNKNOWN_VERSION_MSG
-            except subprocess.TimeoutExpired:
-                return TIMEOUT_MSG
-            except Exception as exc:
-                last_message = str(exc) or UNKNOWN_VERSION_MSG
+    def set_java_status(value: str) -> None:
+        nonlocal java_status_text
+        java_status_text = value
 
-        return last_message
+    def start_version_detection(
+        executable: str,
+        arguments: VersionArg,
+        info_widget: QLineEdit,
+        button: QPushButton,
+        runtime_name: str,
+        set_status: Callable[[str], None],
+        empty_message: str | None = None,
+    ) -> None:
+        info_widget.setText("正在识别版本...")
+        button.setEnabled(False)
+        worker = VersionWorker(executable, arguments)
 
-    class VersionWorker(QThread):
-        result = Signal(str)
+        def handle_result(version: str) -> None:
+            if empty_message is not None and not version:
+                message = empty_message
+            else:
+                message = _version_message(version)
+            info_widget.setText(message)
+            set_status(f"{runtime_name}: {message}")
+            button.setEnabled(True)
+            update_status()
 
-        def __init__(self, exe, arg):
-            super().__init__()
-            self.exe = exe
-            self.arg = arg
-
-        def run(self):
-            # 后台执行版本探测避免阻塞 UI 线程
-            ver = run_version(self.exe, self.arg) or ""
-            self.result.emit(ver)
-
-    def _track_worker(worker):
-        worker.setParent(dlg)
-        dlg._workers.append(worker)
-
-        def _cleanup():
-            try:
-                dlg._workers.remove(worker)
-            except ValueError:
-                pass
-            worker.deleteLater()
-
-        worker.finished.connect(_cleanup)
+        worker.result.connect(handle_result)
+        _track_worker(dlg, worker)
+        worker.start()
 
     py_builtin.setChecked(use_py_builtin)
     py_custom.setChecked(not use_py_builtin)
@@ -228,47 +311,29 @@ def show_env_dialog(parent, env_obj=None):
     java_custom.setChecked(not use_java_builtin)
 
     if py_custom_path and not use_py_builtin:
-        py_info.setText("正在识别版本...")
-        py_btn.setEnabled(False)
-        worker = VersionWorker(py_custom_path, "--version")
-
-        def on_py_version(ver):
-            nonlocal py_status_text
-            if ver:
-                py_info.setText(ver)
-                py_status_text = f"Python: {ver}"
-            else:
-                py_info.setText(UNKNOWN_VERSION_MSG)
-                py_status_text = f"Python: {UNKNOWN_VERSION_MSG}"
-            py_btn.setEnabled(True)
-            update_status()
-
-        worker.result.connect(on_py_version)
-        _track_worker(worker)
-        worker.start()
+        start_version_detection(
+            py_custom_path,
+            "--version",
+            py_info,
+            py_btn,
+            "Python",
+            set_python_status,
+            empty_message=UNKNOWN_VERSION_MSG,
+        )
 
     if java_custom_path and not use_java_builtin:
-        java_info.setText("正在识别版本...")
-        java_btn.setEnabled(False)
-        worker = VersionWorker(java_custom_path, ["-version", "--version"])
+        start_version_detection(
+            java_custom_path,
+            ["-version", "--version"],
+            java_info,
+            java_btn,
+            "Java",
+            set_java_status,
+            empty_message=UNRECOGNIZED_VERSION_MSG,
+        )
 
-        def on_java_version(ver):
-            nonlocal java_status_text
-            if ver:
-                java_info.setText(ver)
-                java_status_text = f"Java: {ver}"
-            else:
-                java_info.setText("未识别版本")
-                java_status_text = "Java: 未识别版本"
-            java_btn.setEnabled(True)
-            update_status()
-
-        worker.result.connect(on_java_version)
-        _track_worker(worker)
-        worker.start()
-
-    def update_py_controls():
-        # 根据选择的内置/系统模式刷新 Python 文本、探测状态与按钮可用性
+    def update_py_controls() -> None:
+        """Refresh Python controls after the source mode changes."""
         nonlocal py_status_text, py_custom_path
 
         if py_builtin.isChecked():
@@ -277,35 +342,20 @@ def show_env_dialog(parent, env_obj=None):
             py_status_text = f"Python: {BUNDLED_RUNTIME_MSG}"
             py_custom_path = ""
         else:
-            def handle_result(ver):
-                nonlocal py_status_text
-                message = ver if ver and ver not in (UNKNOWN_VERSION_MSG, TIMEOUT_MSG) else (ver or NOT_DETECTED_MSG)
-                if ver and ver not in (UNKNOWN_VERSION_MSG, TIMEOUT_MSG):
-                    py_info.setText(ver)
-                    py_status_text = f"Python: {ver}"
-                else:
-                    py_info.setText(message)
-                    py_status_text = f"Python: {message}"
-                py_btn.setEnabled(True)
-                update_status()
-
             if py_custom_path:
-                py_info.setText("正在识别版本...")
-                py_btn.setEnabled(False)
-                worker = VersionWorker(py_custom_path, "--version")
-                worker.result.connect(handle_result)
-                _track_worker(worker)
-                worker.start()
+                start_version_detection(
+                    py_custom_path,
+                    "--version",
+                    py_info,
+                    py_btn,
+                    "Python",
+                    set_python_status,
+                )
             else:
                 py_info.setText(SYSTEM_PYTHON_CHECK_MSG)
-                exe = None
-                for cmd in ("python", "python3"):
-                    candidate = shutil.which(cmd)
-                    if candidate:
-                        exe = candidate
-                        break
+                executable = _find_first_command(("python", "python3"))
 
-                if not exe:
+                if not executable:
                     py_info.setText(SYSTEM_PYTHON_MISSING_MSG)
                     py_btn.setEnabled(True)
                     py_status_text = f"Python: {NOT_DETECTED_MSG}"
@@ -313,43 +363,36 @@ def show_env_dialog(parent, env_obj=None):
                     return
 
                 py_btn.setEnabled(False)
-                worker = VersionWorker(exe, "--version")
-                worker.result.connect(handle_result)
-                _track_worker(worker)
-                worker.start()
+                start_version_detection(
+                    executable,
+                    "--version",
+                    py_info,
+                    py_btn,
+                    "Python",
+                    set_python_status,
+                )
 
         update_status()
 
-    def choose_python():
+    def choose_python() -> None:
         nonlocal py_status_text, py_custom_path
         path, _ = QFileDialog.getOpenFileName(parent, "选择 python.exe", os.getcwd(), "可执行文件 (*.exe)")
 
         if path:
             py_custom_path = path
-            py_info.setText("正在识别版本...")
-            py_btn.setEnabled(False)
-            worker = VersionWorker(path, "--version")
-
-            def on_py_version(ver):
-                nonlocal py_status_text
-                message = ver if ver and ver not in (UNKNOWN_VERSION_MSG, TIMEOUT_MSG) else (ver or NOT_DETECTED_MSG)
-                if ver and ver not in (UNKNOWN_VERSION_MSG, TIMEOUT_MSG):
-                    py_info.setText(ver)
-                    py_status_text = f"Python: {ver}"
-                else:
-                    py_info.setText(message)
-                    py_status_text = f"Python: {message}"
-                py_btn.setEnabled(True)
-                update_status()
-
-            worker.result.connect(on_py_version)
-            _track_worker(worker)
-            worker.start()
+            start_version_detection(
+                path,
+                "--version",
+                py_info,
+                py_btn,
+                "Python",
+                set_python_status,
+            )
         else:
             update_status()
 
-    def update_java_controls():
-        # 根据模式刷新 Java 显示内容并在需要时异步探测版本
+    def update_java_controls() -> None:
+        """Refresh Java controls after the source mode changes."""
         nonlocal java_status_text, java_custom_path
 
         if java_builtin.isChecked():
@@ -358,30 +401,20 @@ def show_env_dialog(parent, env_obj=None):
             java_status_text = f"Java: {BUNDLED_RUNTIME_MSG}"
             java_custom_path = ""
         else:
-            def handle_result(ver):
-                nonlocal java_status_text
-                message = ver if ver and ver not in (UNKNOWN_VERSION_MSG, TIMEOUT_MSG) else (ver or NOT_DETECTED_MSG)
-                if ver and ver not in (UNKNOWN_VERSION_MSG, TIMEOUT_MSG):
-                    java_info.setText(ver)
-                    java_status_text = f"Java: {ver}"
-                else:
-                    java_info.setText(message)
-                    java_status_text = f"Java: {message}"
-                java_btn.setEnabled(True)
-                update_status()
-
             if java_custom_path:
-                java_info.setText("正在识别版本...")
-                java_btn.setEnabled(False)
-                worker = VersionWorker(java_custom_path, ["-version", "--version"])
-                worker.result.connect(handle_result)
-                _track_worker(worker)
-                worker.start()
+                start_version_detection(
+                    java_custom_path,
+                    ["-version", "--version"],
+                    java_info,
+                    java_btn,
+                    "Java",
+                    set_java_status,
+                )
             else:
                 java_info.setText(SYSTEM_JAVA_CHECK_MSG)
-                exe = shutil.which("java")
+                executable = shutil.which("java")
 
-                if not exe:
+                if not executable:
                     java_info.setText(SYSTEM_JAVA_MISSING_MSG)
                     java_btn.setEnabled(True)
                     java_status_text = f"Java: {NOT_DETECTED_MSG}"
@@ -389,38 +422,31 @@ def show_env_dialog(parent, env_obj=None):
                     return
 
                 java_btn.setEnabled(False)
-                worker = VersionWorker(exe, ["-version", "--version"])
-                worker.result.connect(handle_result)
-                _track_worker(worker)
-                worker.start()
+                start_version_detection(
+                    executable,
+                    ["-version", "--version"],
+                    java_info,
+                    java_btn,
+                    "Java",
+                    set_java_status,
+                )
 
         update_status()
 
-    def choose_java():
+    def choose_java() -> None:
         nonlocal java_status_text, java_custom_path
         path, _ = QFileDialog.getOpenFileName(parent, "选择 java.exe", os.getcwd(), "可执行文件 (*.exe)")
 
         if path:
             java_custom_path = path
-            java_info.setText("正在识别版本...")
-            java_btn.setEnabled(False)
-            worker = VersionWorker(path, ["-version", "--version"])
-
-            def on_java_version(ver):
-                nonlocal java_status_text
-                message = ver if ver and ver not in (UNKNOWN_VERSION_MSG, TIMEOUT_MSG) else (ver or NOT_DETECTED_MSG)
-                if ver and ver not in (UNKNOWN_VERSION_MSG, TIMEOUT_MSG):
-                    java_info.setText(ver)
-                    java_status_text = f"Java: {ver}"
-                else:
-                    java_info.setText(message)
-                    java_status_text = f"Java: {message}"
-                java_btn.setEnabled(True)
-                update_status()
-
-            worker.result.connect(on_java_version)
-            _track_worker(worker)
-            worker.start()
+            start_version_detection(
+                path,
+                ["-version", "--version"],
+                java_info,
+                java_btn,
+                "Java",
+                set_java_status,
+            )
         else:
             update_status()
 
@@ -434,23 +460,20 @@ def show_env_dialog(parent, env_obj=None):
     update_py_controls()
     update_java_controls()
 
-    def save_env():
-        # 将当前选择的运行时模式与路径写入 config 表
-        with sqlite3.connect(DB_PATH) as conn:
-            c = conn.cursor()
-            c.execute('CREATE TABLE IF NOT EXISTS config (config_key TEXT PRIMARY KEY, config_value TEXT)')
-
-            def upsert(k, v):
-                c.execute(
-                    'INSERT INTO config (config_key, config_value) VALUES (?, ?) '
-                    'ON CONFLICT(config_key) DO UPDATE SET config_value = excluded.config_value', (k, v))
-
-            upsert('use_builtin_python', 'true' if py_builtin.isChecked() else 'false')
-            upsert('use_builtin_java', 'true' if java_builtin.isChecked() else 'false')
-            upsert('python_custom_path', py_custom_path if (py_custom.isChecked() and py_custom_path) else '')
-            upsert('java_custom_path', java_custom_path if (java_custom.isChecked() and java_custom_path) else '')
-
-            conn.commit()
+    def save_env() -> None:
+        """Persist the selected runtime source and custom executable paths."""
+        _save_config_values(
+            {
+                "use_builtin_python": "true" if py_builtin.isChecked() else "false",
+                "use_builtin_java": "true" if java_builtin.isChecked() else "false",
+                "python_custom_path": (
+                    py_custom_path if py_custom.isChecked() and py_custom_path else ""
+                ),
+                "java_custom_path": (
+                    java_custom_path if java_custom.isChecked() and java_custom_path else ""
+                ),
+            }
+        )
         dlg.accept()
 
     btn_ok.clicked.connect(save_env)
