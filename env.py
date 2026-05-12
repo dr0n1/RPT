@@ -60,14 +60,12 @@ class Env:
         self.python3_path = None
         self.java8_path = None
         self.java11_path = None
-        self.java16_path = None
 
     def load_env(self):
         # 默认将运行时路径指向打包在项目下的内置 Python/Java
-        self.python3_path = _normalize_path("ENV", "python3.11.9", "python.exe")
+        self.python3_path = _normalize_path("ENV", "python3.12.10", "python.exe")
         self.java8_path = _normalize_path("ENV", "Java_8", "bin", "java")
         self.java11_path = _normalize_path("ENV", "Java_11", "bin", "java")
-        self.java16_path = _normalize_path("ENV", "Java_21", "bin", "java")
 
 
 env = Env()

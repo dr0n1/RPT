@@ -227,6 +227,7 @@ def get_default_tools(module_ids):
         (module_ids["CTF"], "svnExploit", "SVN源代码泄露全版本Dump源码", "svnExploit\\SvnExploit.py", "python3_cli", "", "https://github.com/admintony/svnExploit"),
         (module_ids["CTF"], "ApereoCas", "ApereoCas反序列化回显与检测", "ysoserial-mangguogan-master\\ysoserial-managguogan-0.0.1-SNAPSHOT-all.jar", "java11_cui", "","https://github.com/JulianWu520/ysoserial-mangguogan"),
         (module_ids["CTF"], "Jawd", "AWD jar修复", "Jawd\\Jawd-1.0-fat.jar", "java8_gui", "", "https://github.com/AlphabugX/Jawd"),
+        (module_ids["CTF"], "souse", "一个将 Python 源码全自动化转换为 Opcode (pickle) 的工具", "souse", "python3_module", "", "https://github.com/Macr0phag3/souse"),
 
         (module_ids["提权"], "linux-exploit-suggester", "Linux privilege escalation auditing tool", "linux-exploit-suggester", "file_folder", "", "https://github.com/The-Z-Labs/linux-exploit-suggester/"),
         (module_ids["提权"], "windows-kernel-exploits", "Windows平台提权漏洞集合", "windows-kernel-exploits", "file_folder", "","https://github.com/SecWiki/windows-kernel-exploits"),
