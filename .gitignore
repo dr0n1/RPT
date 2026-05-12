@@ -1,10 +1,8 @@
-/.idea
 /.history
-/backup
-/styles/__pycache__
-styles/main.ui
-*.db
-/ENV
+/.idea
 /__pycache__
+/styles/__pycache__
+/ENV
 /tools_*
-/.vscode
+tools.db
+styles/main.ui
