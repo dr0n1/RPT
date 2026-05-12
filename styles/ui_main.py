@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+
+################################################################################
+## Form generated from reading UI file 'main.ui'
+##
+## Created by: Qt User Interface Compiler version 6.10.0
+##
+## WARNING! All changes made in this file will be lost when recompiling UI file!
+################################################################################
+
 from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
     QMetaObject, QObject, QPoint, QRect,
     QSize, QTime, QUrl, Qt)
@@ -73,9 +83,10 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         QMetaObject.connectSlotsByName(MainWindow)
+    # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"RPT V3.0 By dr0n1", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"RPT By dr0n1", None))
         self.action_env.setText(QCoreApplication.translate("MainWindow", u"\u73af\u5883\u53d8\u91cf", None))
         self.action_author.setText("")
         self.action_add.setText(QCoreApplication.translate("MainWindow", u"\u6dfb\u52a0\u5de5\u5177", None))
@@ -89,4 +100,5 @@ class Ui_MainWindow(object):
         self.action_database.setText(QCoreApplication.translate("MainWindow", u"\u6570\u636e\u5e93", None))
         self.menu_3.setTitle(QCoreApplication.translate("MainWindow", u"\u8bbe\u7f6e", None))
         self.menu_4.setTitle(QCoreApplication.translate("MainWindow", u"\u5173\u4e8e", None))
+    # retranslateUi
 

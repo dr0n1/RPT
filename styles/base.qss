@@ -1,0 +1,46 @@
+QWidget {
+    font-family: 'Microsoft YaHei UI', 'Segoe UI', sans-serif;
+    color: #1f2937;
+}
+
+QMainWindow,
+QDialog {
+    background: qlineargradient(x1:0, y1:0, x2:0, y2:1,
+        stop:0 #f8fafc, stop:1 #e2e8f0);
+}
+
+QToolTip {
+    color: #1e293b;
+    background-color: #ffffff;
+    border: 1px solid #dbeafe;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 12px;
+}
+
+QPushButton:focus,
+QListWidget:focus,
+QListWidget::item:focus,
+QTableWidget:focus,
+QTableWidget::item:focus {
+    outline: none;
+}
+
+QLineEdit {
+    background: #ffffff;
+    border: 1px solid #dbeafe;
+    color: #1e293b;
+    selection-background-color: #2563eb;
+    selection-color: #f8fafc;
+}
+
+QScrollBar:vertical {
+    width: 0px;
+    background: transparent;
+    margin: 0;
+}
+
+QScrollBar::handle:vertical {
+    min-height: 0;
+    background: transparent;
+}

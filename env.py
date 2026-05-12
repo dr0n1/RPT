@@ -64,7 +64,6 @@ class Env:
         self.python3_path: str | None = None
         self.java8_path: str | None = None
         self.java11_path: str | None = None
-        self.java16_path: str | None = None
 
     def load_env(self) -> None:
         """Load bundled runtime paths relative to the project root."""

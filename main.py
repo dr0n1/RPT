@@ -1,7 +1,7 @@
 """
 # -*- coding: utf-8 -*-
 # @Author: dr0n1
-# @Version: v3.99.0
+# @Version: v3.99.1
 # @Link: https://www.dr0n.top/
 # @Last Update: 2026/5/12
 """
@@ -230,6 +230,8 @@ class MainWindow(QMainWindow):
         self.setWindowIcon(QIcon(icon_path))
 
     def _bind_events(self) -> None:
+        if self.ui.action_about not in self.ui.menu_4.actions():
+            self.ui.menu_4.addAction(self.ui.action_about)
         self.ui.listWidget.itemClicked.connect(self.on_module_clicked)
         self.ui.action_about.triggered.connect(self.show_about_toolbox)
         self.ui.action_env.triggered.connect(self.env)
@@ -378,7 +380,7 @@ class MainWindow(QMainWindow):
         title_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(title_label)
 
-        version_label = QLabel("Version 3.0")
+        version_label = QLabel("Version 3")
         version_label.setStyleSheet(DIALOG_LABEL_VERSION_STYLE)
         version_label.setAlignment(Qt.AlignCenter)
         layout.addWidget(version_label)
@@ -545,16 +547,13 @@ class MainWindow(QMainWindow):
                 custom = java_custom.replace('\\', '/')
                 env.java8_path = custom
                 env.java11_path = custom
-                env.java16_path = custom
             else:
                 if shutil.which("java"):
                     env.java8_path = "java"
                     env.java11_path = "java"
-                    env.java16_path = "java"
                 else:
                     env.java8_path = ""
                     env.java11_path = ""
-                    env.java16_path = ""
         except Exception:
             pass
 
