@@ -105,6 +105,7 @@ SHIFT+F5 恢复默认配置
 | kerberoast              | https://github.com/nidem/kerberoast                    | -                      |
 | AdFind                  | https://www.joeware.net/freetools/tools/adfind/        | v1.62.00               |
 | SpoolSample             | https://github.com/leechristensen/SpoolSample          | -                      |
+| Certify                 | https://github.com/GhostPack/Certify                   | v2.0.0                 |
 | 社区编译后的工具合集              | -                                                      | -                      |
 |                         |                                                        |                        |
 | Stowaway                | https://github.com/ph4ntonn/Stowaway                   | v2.2                   |
@@ -139,7 +140,7 @@ SHIFT+F5 恢复默认配置
 | busybox                 | https://www.busybox.net/                               | v1.35.0                |
 
 
-Rubeus，spoolsample为源码，需要自己编译
+Rubeus，spoolsample，Certify 为源码，需要自己编译
 
 
 # env

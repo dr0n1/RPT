@@ -215,6 +215,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["内网域工具"], "kerberoast", "Kerberos 攻击工具", "kerberoast", "file_folder", "", "https://github.com/nidem/kerberoast"),
         (module_ids["内网域工具"], "AdFind", "命令行 Active Directory 查询工具", "AdFind", "file_folder", "", "https://www.joeware.net/freetools/tools/adfind/"),
         (module_ids["内网域工具"], "SpoolSample", "此概念验证工具可强制 Windows 主机通过 MS-RPRN RPC 接口向其他计算机进行身份验证。", "SpoolSample", "file_folder", "", "https://github.com/leechristensen/spoolsample"),
+        (module_ids["内网域工具"], "Certify", "Active Directory certificate abuse.", "Certify", "file_folder", "", "https://github.com/GhostPack/Certify"),
         (module_ids["内网域工具"], "社区编译后的工具合集", "社区编译后的工具", "社区编译后的工具", "file_folder", "", ""),
 
         (module_ids["隧道"], "Stowaway", "多级代理工具", "Stowaway", "file_folder", "", "https://github.com/ph4ntonn/Stowaway"),
