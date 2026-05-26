@@ -175,6 +175,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["框架利用工具"], "jeecg-", "Jeecg-Boot综合漏洞利用工具", "jeecg\\jeecg-boot\\jeecgExploitss.jar", "java8_gui", "", "https://github.com/MInggongK/jeecg-"),
         (module_ids["框架利用工具"], "Jeecg_Tools", "jeecg框架漏洞利用工具", "jeecg\\jeecg\\Jeecg_Tools-1.0-java8.jar", "java8_gui", "", "https://github.com/K-7H7l/Jeecg_Tools"),
         (module_ids["框架利用工具"], "redis-rogue-server", "Redis(<=5.0.5) RCE", "redis-rogue-server-master","file_folder", "", "https://github.com/n0b0dyCN/redis-rogue-server"),
+        (module_ids["框架利用工具"], "Solr", "solr综合利用工具", "Solr\\run.py", "python3_cli", "", "https://github.com/xiangmou123/SolrScan"),
 
         (module_ids["cms/oa利用工具"], "若依RuoYi", "若依v4.7.8定时任务rce", "RuoYi\\RuoYiExploitGUI_v1.0.jar", "java11_gui", "", "https://github.com/charonlight/RuoYiExploitGUI"),
         (module_ids["cms/oa利用工具"], "帆软", "帆软bi反序列漏洞利用工具", "Frchannel\\FrChannel-v3.jar", "java11_gui", "", "https://github.com/7wkajk/Frchannel"),
@@ -233,6 +234,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["CTF"], "ApereoCas", "ApereoCas反序列化回显与检测", "ysoserial-mangguogan-master\\ysoserial-managguogan-0.0.1-SNAPSHOT-all.jar", "java11_cui", "","https://github.com/JulianWu520/ysoserial-mangguogan"),
         (module_ids["CTF"], "Jawd", "AWD jar修复", "Jawd\\Jawd-1.0-fat.jar", "java11_gui", "", "https://github.com/AlphabugX/Jawd"),
         (module_ids["CTF"], "souse", "一个将 Python 源码全自动化转换为 Opcode (pickle) 的工具", "souse", "python3_module", "", "https://github.com/Macr0phag3/souse"),
+        (module_ids["CTF"], "JNDIExploit", "JNDI注入利用", "JNDIExploit", "file_folder", "", "https://github.com/0x727/JNDIExploit"),
 
         (module_ids["提权"], "linux-exploit-suggester", "Linux privilege escalation auditing tool", "linux-exploit-suggester", "file_folder", "", "https://github.com/The-Z-Labs/linux-exploit-suggester/"),
         (module_ids["提权"], "windows-kernel-exploits", "Windows平台提权漏洞集合", "windows-kernel-exploits", "file_folder", "","https://github.com/SecWiki/windows-kernel-exploits"),

@@ -22,7 +22,7 @@ SHIFT+F5 恢复默认配置
 ![](/img/5.png)
 
 本项目只提供框架，完整版下载: https://pan.quark.cn/s/b134d9a371d5  
-目前包含99个工具(逐渐增加中)，均收集自互联网，病毒后门需自行辨别  
+目前包含102个工具(逐渐增加中)，均收集自互联网，病毒后门需自行辨别  
 
 # 工具
 
@@ -65,6 +65,7 @@ SHIFT+F5 恢复默认配置
 | jeecg-                  | https://github.com/MInggongK/jeecg-                    | v4.2                   |
 | Jeecg_Tools             | https://github.com/K-7H7l/Jeecg_Tools                  | v1.0                   |
 | redis-rogue-server      | https://github.com/n0b0dyCN/redis-rogue-server         | -                      |
+| Solr                    | https://github.com/xiangmou123/SolrScan                | v2.0.0                 |
 |                         |                                                        |                        |
 | 若依RuoYi                 | https://github.com/charonlight/RuoYiExploitGUI         | -                      |
 | 帆软                      | https://github.com/7wkajk/Frchannel                    | v3                     |
@@ -123,6 +124,7 @@ SHIFT+F5 恢复默认配置
 | ApereoCas               | https://github.com/JulianWu520/ysoserial-mangguogan    | v0.0.1                 |
 | Jawd                    | https://github.com/AlphabugX/Jawd                      | v1.0                   |
 | souse                   | https://github.com/Macr0phag3/souse                    | v5.4                   |
+| JNDIExploit             | https://github.com/0x727/JNDIExploit                   | v1.1                   |
 |                         |                                                        |                        |
 | linux-exploit-suggester | https://github.com/The-Z-Labs/linux-exploit-suggester/ | v1.2                   |
 | windows-kernel-exploits | https://github.com/SecWiki/windows-kernel-exploits     | -                      |
