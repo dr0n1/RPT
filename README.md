@@ -22,7 +22,7 @@ SHIFT+F5 恢复默认配置
 ![](/img/5.png)
 
 本项目只提供框架，完整版下载: https://pan.quark.cn/s/b134d9a371d5  
-目前包含102个工具(逐渐增加中)，均收集自互联网，病毒后门需自行辨别  
+目前包含104个工具(逐渐增加中)，均收集自互联网，病毒后门需自行辨别  
 
 # 工具
 
@@ -140,6 +140,8 @@ SHIFT+F5 恢复默认配置
 |                         |                                                        |                        |
 | ToolsFx                 | https://github.com/Leon406/ToolsFx                     | v1.19.0                |
 | busybox                 | https://www.busybox.net/                               | v1.35.0                |
+| Proxifier               | https://www.proxifier.com/                             | v4.14                  |
+| BurpSuitePro            | https://github.com/h3110w0r1d-y/BurpLoaderKeygen       | v2025.10.1             |
 
 
 Rubeus，spoolsample，Certify 为源码，需要自己编译

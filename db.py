@@ -250,6 +250,8 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
 
         (module_ids["misc"], "ToolsFx", "跨平台密码学工具箱。", "ToolsFx-1.19.0-withjre-win-x64\\ToolsFx.exe", "exe_gui", "","https://github.com/Leon406/ToolsFx"),
         (module_ids["misc"], "busybox", "linux工具箱。", "busybox", "file_folder", "", "https://www.busybox.net/"),
+        (module_ids["misc"], "Proxifier", "windows代理工具。", "Proxifier\\Proxifier.exe", "exe_gui", "", "https://www.proxifier.com/"),
+        (module_ids["misc"], "BurpSuitePro", "burp", "BurpSuitePro\\start.bat", "exe_gui", "", "https://github.com/h3110w0r1d-y/BurpLoaderKeygen"),
     ]
 
     processed_defaults = []
