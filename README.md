@@ -22,7 +22,7 @@ SHIFT+F5 恢复默认配置
 ![](/img/5.png)
 
 本项目只提供框架，完整版下载: https://pan.quark.cn/s/b134d9a371d5  
-目前包含104个工具(逐渐增加中)，均收集自互联网，病毒后门需自行辨别  
+目前包含105个工具(逐渐增加中)，均收集自互联网，病毒后门需自行辨别  
 
 # 工具
 
@@ -134,6 +134,7 @@ SHIFT+F5 恢复默认配置
 | dirtyfrag               | https://github.com/V4bel/dirtyfrag                     | -                      |
 | CVE-2021-4034           | https://github.com/theori-io/copy-fail-CVE-2026-31431  | -                      |
 | Potato                  | https://github.com/CCob/SweetPotato                    | -                      |
+| KrbRelayUp              | https://github.com/Dec0ne/KrbRelayUp                   | -                      |
 |                         |                                                        |                        |
 | GDRE                    | https://github.com/GDRETools/gdsdecomp                 | v2.4.0                 |
 | wabt                    | https://github.com/WebAssembly/wabt                    | v1.0.40                |
@@ -144,7 +145,7 @@ SHIFT+F5 恢复默认配置
 | BurpSuitePro            | https://github.com/h3110w0r1d-y/BurpLoaderKeygen       | v2025.10.1             |
 
 
-Rubeus，spoolsample，Certify 为源码，需要自己编译
+Rubeus，spoolsample，Certify，KrbRelayUp  为源码，需要自己编译
 
 
 # env

@@ -244,6 +244,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["提权"], "dirtyfrag", "Universal Linux LPE", "dirtyfrag", "file_folder", "","https://github.com/V4bel/dirtyfrag"),
         (module_ids["提权"], "CVE-2021-4034", "CVE-2021-4034", "CVE-2021-4034", "file_folder", "","https://github.com/theori-io/copy-fail-CVE-2026-31431"),
         (module_ids["提权"], "Potato", "土豆家族", "Potato", "file_folder", "", "https://github.com/CCob/SweetPotato"),
+        (module_ids["提权"], "KrbRelayUp", "KrbRelayUp", "KrbRelayUp", "file_folder", "", "https://github.com/Dec0ne/KrbRelayUp"),
 
         (module_ids["reverse"], "GDRE", "Godot RE Tools", "GDRE_tools-v2.4.0-windows\\gdre_tools.exe", "exe_gui", "","https://github.com/GDRETools/gdsdecomp"),
         (module_ids["reverse"], "wabt", "The WebAssembly Binary Toolkit", "wabt-1.0.39\\bin", "file_folder", "","https://github.com/WebAssembly/wabt"),
