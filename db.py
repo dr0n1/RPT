@@ -219,6 +219,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["内网域工具"], "Certify", "Active Directory certificate abuse.", "Certify", "file_folder", "", "https://github.com/GhostPack/Certify"),
         (module_ids["内网域工具"], "社区编译后的工具合集", "社区编译后的工具", "社区编译后的工具", "file_folder", "", ""),
         (module_ids["内网域工具"], "Whisker+pyWhisker+PKINITtools", "Shadow Credentials", "Whisker", "file_folder", "","https://github.com/eladshamir/Whisker"),
+        (module_ids["内网域工具"], "PetitPotam", "与ntlmrelayx等配合使用，强制主机访问其他主机进行身份验证", "PetitPotam", "file_folder", "", "https://github.com/topotam/PetitPotam"),
 
         (module_ids["隧道"], "Stowaway", "多级代理工具", "Stowaway", "file_folder", "", "https://github.com/ph4ntonn/Stowaway"),
         (module_ids["隧道"], "iox", "端口转发 & 内网代理工具", "iox", "file_folder", "", "https://github.com/EddieIvan01/iox"),
