@@ -221,6 +221,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["内网域工具"], "Whisker+pyWhisker+PKINITtools", "Shadow Credentials", "Whisker", "file_folder", "","https://github.com/eladshamir/Whisker"),
         (module_ids["内网域工具"], "PetitPotam", "与ntlmrelayx等配合使用，强制主机访问其他主机进行身份验证", "PetitPotam", "file_folder", "", "https://github.com/topotam/PetitPotam"),
         (module_ids["内网域工具"], "krbrelayx", "Toolkit for abusing Kerberos. ",  "krbrelayx", "file_folder", "", "https://github.com/dirkjanm/krbrelayx"),
+        (module_ids["内网域工具"], "DFSCoerce", "NTLM Relay", "DFSCoerce", "file_folder", "", "https://github.com/Wh04m1001/DFSCoerce"),
 
         (module_ids["隧道"], "Stowaway", "多级代理工具", "Stowaway", "file_folder", "", "https://github.com/ph4ntonn/Stowaway"),
         (module_ids["隧道"], "iox", "端口转发 & 内网代理工具", "iox", "file_folder", "", "https://github.com/EddieIvan01/iox"),

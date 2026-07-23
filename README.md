@@ -22,11 +22,11 @@ SHIFT+F5 恢复默认配置
 ![](/img/5.png)
 
 本项目只提供框架，完整版下载: https://pan.quark.cn/s/b134d9a371d5  
-目前包含110个工具(逐渐增加中)，均收集自互联网，病毒后门需自行辨别  
+目前包含111个工具(逐渐增加中)，均收集自互联网，病毒后门需自行辨别  
 
 # 工具
 
-| 项目                      | 下载地址                                                   | 版本号                    |
+| 项目                      | 下载地址                                               | 版本号                    |
 |-------------------------|--------------------------------------------------------|------------------------|
 | 冰蝎3                     | https://github.com/rebeyond/Behinder                   | 2021.4.29 v3.0 Beta 11 |
 | 冰蝎4                     | https://github.com/rebeyond/Behinder                   | 2023.8.24 v4.1         |
@@ -111,6 +111,7 @@ SHIFT+F5 恢复默认配置
 | Whisker                 | https://github.com/eladshamir/Whisker                  | -                      |
 | PetitPotam              | https://github.com/topotam/PetitPotam                  | -                      |
 | krbrelayx               | https://github.com/dirkjanm/krbrelayx                  | -                      |
+| DFSCoerce               | https://github.com/Wh04m1001/DFSCoerce                 | -                      |
 |                         |                                                        |                        |
 | Stowaway                | https://github.com/ph4ntonn/Stowaway                   | v2.2                   |
 | iox                     | https://github.com/EddieIvan01/iox                     | v0.4                   |
