@@ -186,7 +186,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["cms/oa利用工具"], "Exp-Tools", "OA综合漏洞利用工具", "Exp-Tools\\Exp-Tools-1.3.1-encrypted.jar", "java8_gui", "-javaagent:Exp-Tools-1.3.1-encrypted.jar", "https://github.com/cseroad/Exp-Tools"),
         (module_ids["cms/oa利用工具"], "TongdaOATool", "通达OA漏洞检测工具", "tongda\\TongdaTools.jar", "java11_gui", "", "https://github.com/xiaokp7/TongdaOATool"),
 
-        (module_ids["综合利用工具"], "mdut", "中文的数据库跨平台利用工具", "mdut\\Multiple.Database.Utilization.Tools-2.1.1-jar-with-dependencies.jar", "java8_gui", "", "https://github.com/SafeGroceryStore/MDUT"),
+        (module_ids["综合利用工具"], "mdut", "中文的数据库跨平台利用工具", "mdut\\Multiple_Database_Utilization_Tools.exe", "exe_gui", "", "https://github.com/SafeGroceryStore/MDUT"),
         (module_ids["综合利用工具"], "蓝队分析研判工具箱", "蓝队分析研判工具箱", "BlueTeamTools\\BlueTeam_ABC_123.jar", "java11_gui", "", "https://github.com/abc123info/BlueTeamTools"),
         (module_ids["综合利用工具"], "API-Explorer", "API接口管理工具", "API-Explorer\\API-Explorer.exe", "exe_gui", "", "https://github.com/mrknow001/API-Explorer"),
         (module_ids["综合利用工具"], "aliyun-accesskey-Tools", "阿里云accesskey利用工具", "aliyun\\Aliyun-.AK.Tools-V1.3.exe", "exe_gui", "", "https://github.com/mrknow001/aliyun-accesskey-Tools"),
@@ -199,6 +199,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["综合利用工具"], "Postgresql", "Postgresql红队实战漏洞利用工具", "Postgresql\\postgreUtil-1.0-SNAPSHOT-jar-with-dependencies.jar", "java8_gui", "", "https://mp.weixin.qq.com/s/0s6CTAjwd5-qN6IxupwC9w"),
         (module_ids["综合利用工具"], "cloudsword", "云鉴 CloudSword", "cloudsword\\cloudsword.exe", "exe_cli", "", "https://github.com/wgpsec/cloudsword"),
         (module_ids["综合利用工具"], "unauthorized", "常见的未授权漏洞检测", "unauthorized\\unauthorizedV2.exe", "exe_gui", "", "https://github.com/xk11z/unauthorized"),
+        (module_ids["综合利用工具"], "cve", "cve集合", "cve", "file_folder", "", ""),
 
         (module_ids["内网域工具"], "fscan", "一款内网综合扫描工具", "fscan", "file_folder", "", "https://github.com/shadow1ng/fscan"),
         (module_ids["内网域工具"], "TxPortMap", "Port Scanner & Banner Identify From TianXiang", "TxPortMap", "file_folder", "", "https://github.com/4dogs-cn/TXPortMap"),
@@ -254,6 +255,8 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
 
         (module_ids["reverse"], "GDRE", "Godot RE Tools", "GDRE_tools-v2.4.0-windows\\gdre_tools.exe", "exe_gui", "","https://github.com/GDRETools/gdsdecomp"),
         (module_ids["reverse"], "wabt", "The WebAssembly Binary Toolkit", "wabt-1.0.39\\bin", "file_folder", "","https://github.com/WebAssembly/wabt"),
+        (module_ids["reverse"], "die", "Program for determining types of files for Windows, Linux and MacOS.", "die\\die.exe", "exe_gui", "",  "https://github.com/horsicq/DIE-engine"),
+        (module_ids["reverse"], "ida", "ida", "ida\\IDA_Pro_8.3_绿化工具.exe", "exe_gui", "", "https://down.52pojie.cn/Tools/Disassemblers/IDA_Pro_v8.3_Portable.zip"),
 
         (module_ids["misc"], "ToolsFx", "跨平台密码学工具箱。", "ToolsFx-1.19.0-withjre-win-x64\\ToolsFx.exe", "exe_gui", "","https://github.com/Leon406/ToolsFx"),
         (module_ids["misc"], "busybox", "linux工具箱。", "busybox", "file_folder", "", "https://www.busybox.net/"),
