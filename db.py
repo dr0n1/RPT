@@ -200,6 +200,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["综合利用工具"], "cloudsword", "云鉴 CloudSword", "cloudsword\\cloudsword.exe", "exe_cli", "", "https://github.com/wgpsec/cloudsword"),
         (module_ids["综合利用工具"], "unauthorized", "常见的未授权漏洞检测", "unauthorized\\unauthorizedV2.exe", "exe_gui", "", "https://github.com/xk11z/unauthorized"),
         (module_ids["综合利用工具"], "cve", "cve集合", "cve", "file_folder", "", ""),
+        (module_ids["综合利用工具"], "SharpXDecrypt", "Xshell全版本密码恢复工具", "SharpXDecrypt", "file_folder", "", "https://github.com/JDArmy/SharpXDecrypt"),
 
         (module_ids["内网域工具"], "fscan", "一款内网综合扫描工具", "fscan", "file_folder", "", "https://github.com/shadow1ng/fscan"),
         (module_ids["内网域工具"], "TxPortMap", "Port Scanner & Banner Identify From TianXiang", "TxPortMap", "file_folder", "", "https://github.com/4dogs-cn/TXPortMap"),
