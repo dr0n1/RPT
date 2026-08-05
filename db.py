@@ -241,6 +241,7 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["CTF"], "Jawd", "AWD jar修复", "Jawd\\Jawd-1.0-fat.jar", "java11_gui", "", "https://github.com/AlphabugX/Jawd"),
         (module_ids["CTF"], "souse", "一个将 Python 源码全自动化转换为 Opcode (pickle) 的工具", "souse", "python3_module", "", "https://github.com/Macr0phag3/souse"),
         (module_ids["CTF"], "JNDIExploit", "JNDI注入利用", "JNDIExploit", "file_folder", "", "https://github.com/0x727/JNDIExploit"),
+        (module_ids["CTF"], "ysoserial", "ysoserial", "ysoserial", "file_folder", "", "https://github.com/frohoff/ysoserial"),
 
         (module_ids["提权"], "linux-exploit-suggester", "Linux privilege escalation auditing tool", "linux-exploit-suggester", "file_folder", "", "https://github.com/The-Z-Labs/linux-exploit-suggester/"),
         (module_ids["提权"], "windows-kernel-exploits", "Windows平台提权漏洞集合", "windows-kernel-exploits", "file_folder", "","https://github.com/SecWiki/windows-kernel-exploits"),
