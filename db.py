@@ -259,11 +259,13 @@ def get_default_tools(module_ids: dict[str, int]) -> list[tuple[object, ...]]:
         (module_ids["reverse"], "wabt", "The WebAssembly Binary Toolkit", "wabt-1.0.39\\bin", "file_folder", "","https://github.com/WebAssembly/wabt"),
         (module_ids["reverse"], "die", "Program for determining types of files for Windows, Linux and MacOS.", "die\\die.exe", "exe_gui", "",  "https://github.com/horsicq/DIE-engine"),
         (module_ids["reverse"], "ida", "ida", "ida\\IDA_Pro_8.3_绿化工具.exe", "exe_gui", "", "https://down.52pojie.cn/Tools/Disassemblers/IDA_Pro_v8.3_Portable.zip"),
+        (module_ids["reverse"], "jadx", "Dex to Java decompiler", "jadx\\jadx-gui-1.5.6.exe", "exe_gui", "", "https://github.com/skylot/jadx"),
 
         (module_ids["misc"], "ToolsFx", "跨平台密码学工具箱。", "ToolsFx-1.19.0-withjre-win-x64\\ToolsFx.exe", "exe_gui", "","https://github.com/Leon406/ToolsFx"),
         (module_ids["misc"], "busybox", "linux工具箱。", "busybox", "file_folder", "", "https://www.busybox.net/"),
         (module_ids["misc"], "Proxifier", "windows代理工具。", "Proxifier\\Proxifier.exe", "exe_gui", "", "https://www.proxifier.com/"),
         (module_ids["misc"], "BurpSuitePro", "burp", "BurpSuitePro\\start.bat", "exe_gui", "", "https://github.com/h3110w0r1d-y/BurpLoaderKeygen"),
+        (module_ids["misc"], "010editor", "text editor", "010\\010EditorPortable.exe", "exe_gui", "", "https://www.sweetscape.com/010editor/"),
     ]
 
     processed_defaults = []
